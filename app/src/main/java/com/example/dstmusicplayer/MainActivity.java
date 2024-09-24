@@ -61,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new HomeFragment());
             } else if (itemId == R.id.library) {
                 replaceFragment(new ThuvienFragment());
+            } else if (itemId == R.id.nav_lib) {
+                replaceFragment(new ThuvienFragment());
             }
+
 
             return true;
         });

@@ -11,17 +11,19 @@
     tools:openDrawer="start"
     tools:context=".MainActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:id="@+id/toolbar"
             android:elevation="4dp"
-            android:background="@color/lavender"
+            android:background="@color/music"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
@@ -45,8 +47,8 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_hearder"
         app:menu="@menu/nav_menu"
-        app:itemIconTint="@color/lavender"
-        app:itemTextColor="@color/lavender"/>
+        app:itemIconTint="@color/music"
+        app:itemTextColor="@color/music"/>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
 
         android:id="@+id/main"
@@ -54,16 +56,15 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+
         <com.google.android.material.bottomappbar.BottomAppBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bottomAppBar"
             android:layout_gravity="bottom"
-            android:background="@color/white"
+            android:background="@color/music"
             app:fabCradleMargin="0dp"
-
             app:fabAlignmentMode="center"
-
             app:fabCradleRoundedCornerRadius="0dp">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -71,7 +72,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/bottomNavigationView"
                 android:layout_marginEnd="8dp"
-
                 app:labelVisibilityMode="labeled"
                 android:background="@android:color/transparent"
                 app:menu="@menu/bottom_menu" />
@@ -87,7 +87,7 @@
             app:layout_anchor="@id/bottomAppBar"
             android:id="@+id/fab"
             app:maxImageSize="30dp"
-            app:tint="@color/lavender"/>
+            app:tint="@color/music"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
