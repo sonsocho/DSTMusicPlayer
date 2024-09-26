@@ -15,9 +15,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +25,7 @@ import androidx.room.Room;
 import java.util.ArrayList;
 import java.util.List;
 
-import conect.SongData;
+import connectDB.SongData;
 import entity.Song;
 
 

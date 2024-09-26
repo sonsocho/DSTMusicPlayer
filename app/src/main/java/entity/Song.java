@@ -1,25 +1,11 @@
 package entity;
 
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import java.time.LocalDateTime;
-import java.util.TimerTask;
-
-@Entity(tableName = "BaiHat"
-//        foreignKeys = @ForeignKey(
-//                entity = Playlist.class,
-//                parentColumns = "id_Playlist",
-//                childColumns = "id_Playlist",
-//                onDelete = ForeignKey.CASCADE
-//        )
-
-)
+@Entity(tableName = "BaiHat")
 public class Song {
     @PrimaryKey
     @NonNull
@@ -30,48 +16,17 @@ public class Song {
     private String namPhatHanh;
     private String album;
     private int soLanNghe;
-    private String img;
-
-    public String getThoiGianNghe() {
-        return thoiGianNghe;
-    }
-
-    public void setThoiGianNghe(String thoiGianNghe) {
-        this.thoiGianNghe = thoiGianNghe;
-    }
-
     private String thoiGianNghe;
-//    private String id_Playlist; //xóa
 
-
-
-    public Song(@NonNull String id_BaiHat, String tenBaiHat, String tenNgheSi, String namPhatHanh, String album, int soLanNghe, String img, String thoiGianNghe) {
+    public Song(@NonNull String id_BaiHat, String tenBaiHat, String tenNgheSi, String namPhatHanh, String album, int soLanNghe, String thoiGianNghe) {
         this.id_BaiHat = id_BaiHat;
         this.tenBaiHat = tenBaiHat;
         this.tenNgheSi = tenNgheSi;
         this.namPhatHanh = namPhatHanh;
         this.album = album;
         this.soLanNghe = soLanNghe;
-        this.img = img;
         this.thoiGianNghe = thoiGianNghe;
-//        this.id_Playlist = id_Playlist;
     }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
-    }
-
-//    public String getId_Playlist() {
-//        return id_Playlist;
-//    }
-//
-//    public void setId_Playlist(String id_Playlist) {
-//        this.id_Playlist = id_Playlist;
-//    }
 
     public String getId_BaiHat() {
         return id_BaiHat;
@@ -121,6 +76,11 @@ public class Song {
         this.soLanNghe = soLanNghe;
     }
 
-
+    public String getThoiGianNghe() {
+        return thoiGianNghe;
+    }
+    public void setThoiGianNghe(String thoiGianNghe) {
+        this.thoiGianNghe = thoiGianNghe;
+    }
 
 }
