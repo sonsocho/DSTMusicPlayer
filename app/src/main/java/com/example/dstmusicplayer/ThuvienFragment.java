@@ -1,4 +1,7 @@
+
 package com.example.dstmusicplayer;
+
+import static android.app.ProgressDialog.show;
 
 import android.os.Bundle;
 
@@ -8,57 +11,96 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ThuvienFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import conect.SongData;
+import entity.Song;
+
+
 public class ThuvienFragment extends Fragment {
+    private SongData db;
+    private ListView songListView;
+    private RecyclerView recyclerView;
+    private MediaPlayer mediaPlayer;
+    private addSong permissionManager;
+    private boolean select;
+    private CustomSongAdapter adapter;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @Nullable
+    @Override
+    public View onCreateView(  @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_thuvien, container, false);
 
-    public ThuvienFragment() {
-        // Required empty public constructor
+        db = Room.databaseBuilder(requireContext().getApplicationContext(),
+                        SongData.class, "music.db")
+                .allowMainThreadQueries()
+                .build();
+
+        songListView = view.findViewById(R.id.recycler_songs);
+        permissionManager = new addSong(requireActivity(), requireContext());
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            select = bundle.getBoolean("select", false);
+        }
+
+        if (select) {
+            permissionManager.requestPermission();
+        } else {
+            displaySongs();
+        }
+        Button btnDSP = view.findViewById(R.id.btndsp);
+        btnDSP.setOnClickListener(v -> {
+            Intent intentDSP = new Intent(getActivity(), DSPMain.class);
+            ArrayList<String> listDsp = adapter.getListDSP();
+            intentDSP.putStringArrayListExtra("listDSP", listDsp);
+            startActivity(intentDSP);
+
+        });
+
+
+
+
+        return view;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ThuvienFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ThuvienFragment newInstance(String param1, String param2) {
-        ThuvienFragment fragment = new ThuvienFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == addSong.REQUEST_CODE_SONG_LIST && resultCode == getActivity().RESULT_OK && data != null) {
+            ArrayList<String> selectedSongs = data.getStringArrayListExtra("selectedSongs");
+
+            if (selectedSongs != null) {
+                displaySongs();
+            } else {
+                Log.e("MusicFragment", "No selected songs found");
+            }
+        } else {
+            Log.e("MusicFragment", "Request code or result code not matched");
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_thuvien, container, false);
+    private void displaySongs() {
+        List<Song> songs = db.songDao().getAllSongs();
+        adapter = new CustomSongAdapter(requireContext(), songs);
+        songListView.setAdapter(adapter);
     }
+
+
 }
