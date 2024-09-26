@@ -330,6 +330,7 @@
                     android:src="@drawable/baseline_play_circle_filled_24"
                     app:tint="@android:color/black" />
                 <ImageView
+                    android:id="@+id/img_properties"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/baseline_more_vert_24"
