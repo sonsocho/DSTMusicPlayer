@@ -60,31 +60,37 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="@drawable/logo"
+                                android:src="@drawable/turntable_retro_vintage_197352_3840x2160"
                                 />
-
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/black"
+                                android:alpha="0.5" />
 
                             <!-- Text được đặt lên trên ảnh -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="start|bottom"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginBottom="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Được phát nhiều nhất"
+                                    android:text="Phát gần đây"
                                     android:textColor="@color/white"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/baseline_play_circle_filled_24"
+                                    android:layout_marginRight="8dp"
+                                    app:tint="@color/white" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0 Bài hát"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/white" />
                             </LinearLayout>
                         </FrameLayout>
                     </androidx.cardview.widget.CardView>
@@ -109,48 +115,160 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="@drawable/logo"
+                                android:src="@drawable/piano_keys_macro_200071_3840x2160"
                                 />
-
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/black"
+                                android:alpha="0.5" />
 
                             <!-- Text được đặt lên trên ảnh -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="start|bottom"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginBottom="10dp"
                                 android:orientation="vertical">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Được thêm sau cùng"
+                                    android:text="Phát nhiều nhất"
                                     android:textSize="16sp"
                                     android:textColor="@color/white"
                                     android:textStyle="bold" />
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/baseline_play_circle_filled_24"
+                                    android:layout_marginRight="8dp"
+                                    app:tint="@color/white" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0 Bài hát"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/white" />
                             </LinearLayout>
                         </FrameLayout>
                     </androidx.cardview.widget.CardView>
 
                     <!-- Mục 3: Phát gần đây -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_margin="8dp"
+                        android:layout_columnWeight="1"
+                        android:layout_rowWeight="1"
+                        app:cardCornerRadius="7dp"
+                        app:cardElevation="4dp">
 
+                        <!-- Layer ảnh và text -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <!-- Ảnh nền làm mờ -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/vinyl_tonearm_cartridge_107810_3840x2160"
+                                />
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/black"
+                                android:alpha="0.5" />
+
+                            <!-- Text được đặt lên trên ảnh -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="start|bottom"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yêu thích"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/white"
+                                    android:textStyle="bold" />
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/baseline_play_circle_filled_24"
+                                    android:layout_marginRight="8dp"
+                                    app:tint="@color/white" />
+
+                            </LinearLayout>
+                        </FrameLayout>
+                    </androidx.cardview.widget.CardView>
                     <!-- Mục 4: Yêu thích -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_margin="8dp"
+                        android:layout_columnWeight="1"
+                        android:layout_rowWeight="1"
+                        app:cardCornerRadius="7dp"
+                        app:cardElevation="4dp">
 
+                        <!-- Layer ảnh và text -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <!-- Ảnh nền làm mờ -->
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/guitar_guitarist_musical_instrument_126078_3840x2160"
+                                />
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/black"
+                                android:alpha="0.5" />
+
+                            <!-- Text được đặt lên trên ảnh -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="start|bottom"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginBottom="10dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Nghệ sĩ"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/white"
+                                    android:textStyle="bold" />
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/baseline_play_circle_filled_24"
+                                    android:layout_marginRight="8dp"
+                                    app:tint="@color/white" />
+
+
+                            </LinearLayout>
+                        </FrameLayout>
+                    </androidx.cardview.widget.CardView>
                 </GridLayout>
 
                 <!-- Phần khác của giao diện có thể tiếp tục ở đây -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" Đề xuất"
-                    android:textSize="24sp"
-                    android:layout_marginTop="16dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text=" Đề xuất"
+                android:textStyle="bold"
+                android:textSize="24sp" />
 
         </LinearLayout>
         <!-- Hiển thị danh sách bài hát nghe gần đây -->
@@ -175,7 +293,7 @@
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:src="@drawable/logo"
+                    android:src="@drawable/mainlogo"
                     android:scaleType="centerCrop"
                     android:layout_marginEnd="16dp" />
 
