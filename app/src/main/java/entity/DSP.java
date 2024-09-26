@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
         foreignKeys = @ForeignKey(
         entity = Song.class,
         parentColumns = "id_BaiHat",
-        childColumns = "ID_BaiHat",
+        childColumns = "id_BaiHat",
         onDelete = ForeignKey.CASCADE
         )
 )
@@ -18,12 +18,11 @@ public class DSP {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     int STT;
+    String id_BaiHat;
 
-    String ID_BaiHat;
-
-    public DSP(int STT, String ID_BaiHat) {
+    public DSP(int STT, String id_BaiHat) {
         this.STT = STT;
-        this.ID_BaiHat = ID_BaiHat;
+        this.id_BaiHat = id_BaiHat;
     }
 
     public DSP() {
@@ -38,12 +37,12 @@ public class DSP {
         this.STT = STT;
     }
 
-    public String getID_BaiHat() {
-        return ID_BaiHat;
+    public String getId_BaiHat() {
+        return id_BaiHat;
     }
 
-    public void setID_BaiHat(String ID_BaiHat) {
-        this.ID_BaiHat = ID_BaiHat;
+    public void setId_BaiHat(String id_BaiHat) {
+        this.id_BaiHat = id_BaiHat;
     }
 }
 

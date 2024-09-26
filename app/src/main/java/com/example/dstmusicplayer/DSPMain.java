@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import conect.SongData;
-import entity.DSP;
+import connectDB.SongData;
 import entity.Song;
 
 
