@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +68,14 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             titleTextView.setText(song.getTenBaiHat());
             artistTextView.setText(song.getTenNgheSi());
 
-            if (!song.getImg().isEmpty()) {
-                Bitmap img = SongImage.stringToBitmap(song.getImg());
+            String songPath2 = song.getId_BaiHat();
+            Bitmap img = null;
+            try {
+                img = SongImage.getImg(songPath2);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
                 albumArtImageView.setImageResource(R.drawable.default_image);
@@ -80,8 +87,8 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                 Toast.makeText(getContext(), songPath, Toast.LENGTH_SHORT ).show();
                 listDSP.add(songPath);
                 DSP dsp = new DSP();
-                dsp.setID_BaiHat(songPath);
-                new Thread(() -> dspData.dspdao().insertDSP(dsp) );
+//                dsp.setID_BaiHat(songPath);
+//                new Thread(() -> dspData.dspdao().insertDSP(dsp) );
             });
         }
 

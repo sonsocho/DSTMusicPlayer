@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import entity.Song;
 
@@ -41,8 +43,14 @@ public class addSongAdapter extends ArrayAdapter<Song> {
 
             titleTextView.setText(song.getTenBaiHat());
             artistTextView.setText(song.getTenNgheSi());
-            if (song.getImg() != "") {
-                Bitmap img = SongImage.stringToBitmap(song.getImg());
+            String songPath =  song.getId_BaiHat();
+            Bitmap img = null;
+            try {
+                img = SongImage.getImg(songPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
                 albumArtImageView.setImageResource(R.drawable.default_image);
@@ -56,21 +64,7 @@ public class addSongAdapter extends ArrayAdapter<Song> {
                 }
             });
         }
-//        CheckBox selectCheckBox = convertView.findViewById(R.id.selectCheckBox);
-//        ImageView imgIcon = convertView.findViewById(R.id.img_properties);
-//        imgIcon.setOnClickListener(view -> {
-//            // Hiển thị Toast với thông tin của bài hát hiện tại
-//            Toast.makeText(getContext(), "Bài hát: " + song.getTenBaiHat(), Toast.LENGTH_SHORT).show();
-//        });
 
-        // Checkbox logic
-//        selectCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            if (isChecked) {
-//                selectedSongs.add(song);
-//            } else {
-//                selectedSongs.remove(song);
-//            }
-//        });
         return convertView;
     }
 

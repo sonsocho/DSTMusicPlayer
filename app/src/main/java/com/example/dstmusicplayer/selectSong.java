@@ -79,7 +79,8 @@ public class selectSong extends AppCompatActivity {
             ArrayList<String> paths = new ArrayList<>();
             List<Song> existingSongs = SongData.getInstance(this).songDao().getAllSongs();
             for (Song song : existingSongs) {
-                paths.add(song.getId_BaiHat());
+                String songPath = utf8.decodeString(song.getId_BaiHat());
+                paths.add(songPath);
             }
             callback.onPathsRetrieved(paths);
         }).start();
@@ -90,22 +91,16 @@ public class selectSong extends AppCompatActivity {
         if (audioFile.exists()) {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             try {
+                String songPath = utf8.encodeString(path);
                 retriever.setDataSource(path);
                 String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
                 String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
                 String album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
                 String year = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR);
-                byte[] art = retriever.getEmbeddedPicture();
-                Bitmap albumArt = null;
-                String imageString = "";
 
-                if (art != null) {
-                    albumArt = BitmapFactory.decodeByteArray(art, 0, art.length);
-                    imageString = SongImage.bitmapToString(albumArt);
-                }
 
-                Song song = new Song(path, title != null ? title : "Unknown Title", artist != null ? artist : "Unknown Artist",
-                        year != null ? year : "Unknown Year", album != null ? album : "Unknown Album", 0, imageString, null);
+                Song song = new Song(songPath, title != null ? title : "Unknown Title", artist != null ? artist : "Unknown Artist",
+                        year != null ? year : "Unknown Year", album != null ? album : "Unknown Album", 0, null);
                 songList.add(song);
             } catch (Exception e) {
                 Log.e("SongInfo", "Error retrieving metadata for: " + path, e);

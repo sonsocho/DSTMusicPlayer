@@ -50,11 +50,8 @@ public class ThuvienFragment extends Fragment {
                 .build();
 
         songListView = view.findViewById(R.id.recycler_songs);
-        permissionManager = new addSong(requireActivity(), requireContext());
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            select = bundle.getBoolean("select", false);
-        }
+        boolean select = false;
+        permissionManager = new addSong(requireActivity(), requireContext(), select);
 
         if (select) {
             permissionManager.requestPermission();

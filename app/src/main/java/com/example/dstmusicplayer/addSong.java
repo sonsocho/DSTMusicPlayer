@@ -23,10 +23,11 @@ public class addSong {
 
     private Activity activity;
     private Context context;
-
-    public addSong(Activity activity, Context context) {
+    private Boolean select;
+    public addSong(Activity activity, Context context, boolean select) {
         this.activity = activity;
         this.context = context;
+        this.select = select;
     }
 
     public void requestPermission() {
@@ -69,7 +70,7 @@ public class addSong {
 
     public void openSong() {
         ArrayList<String> songPaths = getAllAudioFromDevice();
-        if (songPaths != null && !songPaths.isEmpty()) {
+        if (songPaths != null && !songPaths.isEmpty() && select == true) {
             Intent intent = new Intent(context, selectSong.class);
             intent.putStringArrayListExtra("songList", songPaths);
             activity.startActivityForResult(intent, REQUEST_CODE_SONG_LIST);

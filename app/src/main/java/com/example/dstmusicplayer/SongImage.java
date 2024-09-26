@@ -2,24 +2,29 @@ package com.example.dstmusicplayer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class SongImage {
-    public static String bitmapToString(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // Nén bitmap
-        byte[] byteArray = outputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT); // Chuyển sang base64
-    }
-    public static Bitmap stringToBitmap(String encodedString) {
+    public static Bitmap getImg(String filePath) throws IOException {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        Bitmap bitmap = null;
         try {
-            byte[] decodedBytes = Base64.decode(encodedString, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            mmr.setDataSource(filePath);  // Cung cấp đường dẫn tới file nhạc
+            byte[] artBytes = mmr.getEmbeddedPicture();  // Trích xuất ảnh bìa
+
+            if (artBytes != null) {
+                // Chuyển đổi byte array thành Bitmap
+                bitmap = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.length);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            mmr.release();  // Giải phóng MediaMetadataRetriever sau khi sử dụng
         }
+        return bitmap;  // Trả về Bitmap hoặc null nếu không có ảnh bìa
     }
 }
