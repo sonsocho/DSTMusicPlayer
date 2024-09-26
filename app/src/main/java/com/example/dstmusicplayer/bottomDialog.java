@@ -67,13 +67,13 @@ public class bottomDialog {
                 detailDialog.setContentView(R.layout.info_dialog);
 
                 // Ánh xạ các phần tử từ layout dialog_chitiet
-                EditText edtSongName = detailDialog.findViewById(R.id.edtSongName);
-                EditText edtArtistName = detailDialog.findViewById(R.id.edtArtistName);
-                EditText edtReleaseYear = detailDialog.findViewById(R.id.edtReleaseYear);
-                EditText edtDuration = detailDialog.findViewById(R.id.edtDuration);
-                EditText edtPlayCount = detailDialog.findViewById(R.id.edtPlayCount);
-                Button btnEdit = detailDialog.findViewById(R.id.btnEdit);
-                Button btnSave = detailDialog.findViewById(R.id.btnSave);
+                EditText edtSongName = detailDialog.findViewById(R.id.edtsongname);
+                EditText edtArtistName = detailDialog.findViewById(R.id.edtartistname);
+                EditText edtReleaseYear = detailDialog.findViewById(R.id.edtreleaseyear);
+                EditText edtDuration = detailDialog.findViewById(R.id.edtduration);
+                EditText edtPlayCount = detailDialog.findViewById(R.id.edtplaycount);
+                Button btnEdit = detailDialog.findViewById(R.id.btnedit);
+                Button btnSave = detailDialog.findViewById(R.id.btnsave);
 
                 // Chỉnh sửa
                 btnEdit.setOnClickListener(new View.OnClickListener() {
