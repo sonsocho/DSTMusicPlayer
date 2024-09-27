@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -24,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -57,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
     private utf8 utf8;
-
     private SongData db;
     public static ArrayList<String> DSPList;
 
@@ -78,7 +75,26 @@ public class MainActivity extends AppCompatActivity {
             }
             openPhatNhacActivity(fileGoc);
         }
+        if (intent != null && intent.hasExtra("songList")) {
+            ArrayList<String> songList = intent.getStringArrayListExtra("songList");
+            if (songList != null && !songList.isEmpty()) {
+                // Gọi phương thức để thiết lập danh sách bài hát trong MusicService
+                musicService.setPlaylist(songList,0);
+                musicService.startMusic(songList.get(0)); // Bắt đầu phát bài đầu tiên
+            }
+            openDanhSachPhatNhacActivity(songList);
+        }
     }
+
+    private void openDanhSachPhatNhacActivity(ArrayList<String> songIdList){
+        Intent intent = new Intent(this, PhatNhacActivity.class);
+        intent.putStringArrayListExtra("songList", songIdList);
+        intent.putExtra("currentSongIndex", 0); // Vị trí bài hát hiện tại
+        startActivity(intent);
+    }
+
+
+
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -120,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             }else if (itemId == R.id.library) {
                 replaceFragment(new ThuvienFragment());
             } else if (itemId == R.id.playlist) {
-
+                replaceFragment(new playlistFragment());
             }
             return true;
         });
@@ -133,10 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
-
-
     }
-
     private void createDSPList() {
         new Thread(() -> {
             try {
@@ -149,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
     private void openPhatNhacActivity(String fileGoc) {
         Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
         intentPhatNhac.putExtra("fileNhac", fileGoc);
@@ -244,10 +258,7 @@ public class MainActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             isServiceBound = false;
         }
-
-
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -259,6 +270,9 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
     }
+
+
+
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -1,15 +1,11 @@
-
 package com.example.dstmusicplayer;
 
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -38,7 +34,6 @@ public class ThuvienFragment extends Fragment {
     private boolean select;
     private CustomSongAdapter adapter;
     private ListView listView;
-
 
     @Nullable
     @Override
@@ -72,8 +67,6 @@ public class ThuvienFragment extends Fragment {
         });
 
 
-
-
         return view;
     }
 
@@ -99,9 +92,7 @@ public class ThuvienFragment extends Fragment {
     private void displaySongs() {
         List<Song> songs = db.songDao().getAllSongs();
         adapter = new CustomSongAdapter(requireContext(), songs, song -> {
-            // Xử lý sự kiện nhấp vào bài hát
-            Toast.makeText(getActivity(), "Selected song: " + song.getTenBaiHat(), Toast.LENGTH_SHORT).show();
-            // Bạn có thể thêm mã ở đây để làm gì đó với bài hát đã chọn
+
         });
         songListView.setAdapter(adapter);
     }
