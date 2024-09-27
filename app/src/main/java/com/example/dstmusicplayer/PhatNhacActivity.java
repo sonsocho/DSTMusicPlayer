@@ -20,13 +20,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import connectDB.SongData;
 import dao.YeuThichDao;
 import entity.YeuThich;
 
 public class PhatNhacActivity extends AppCompatActivity {
 
-    private ImageButton btnLove, btnVolume, btnBack, btnPlayPause, btnTimer, btnPlayList;
+    private ImageButton btnLove, btnVolume, btnBack, btnPlayPause, btnTimer, btnPlayList, btnRepeat, btnNextSong, btnPreviousSong;
     private SeekBar seekBarVolume, seekBarMusic;
     private TextView tvCurrentTime, tvTotalTime, tenNgheSi, tenBaiHat;
     private AudioManager audioManager;
@@ -41,6 +44,13 @@ public class PhatNhacActivity extends AppCompatActivity {
     private boolean isFavorite;
     private Runnable timerRunnable;
     private Handler timerHandler = new Handler();
+    private utf8 utf8;
+    private int currentSongIndex;
+
+
+    private ArrayList<String> songIdList;
+
+
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -48,7 +58,6 @@ public class PhatNhacActivity extends AppCompatActivity {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicService = binder.getService();
             isServiceBound = true;
-            int currentPosition = getIntent().getIntExtra("currentPosition", 0);
             handler.postDelayed(() -> {
                 if (musicService != null) {
                     int totalTime = musicService.getDuration();
@@ -58,7 +67,9 @@ public class PhatNhacActivity extends AppCompatActivity {
                 }
             }, 500);
 
-            currentSongId = musicService.getCurrentSongFilePath();
+            musicService.setPlaylist(songIdList, currentSongIndex);
+            String fileGoc = musicService.getCurrentSongFilePath();
+            currentSongId = utf8.encodeString(fileGoc);
             checkFavoriteStatus();
             setupUI();
         }
@@ -74,6 +85,7 @@ public class PhatNhacActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phatnhac);
+
         // Khởi tạo các thành phần giao diện
         btnTimer = findViewById(R.id.btnTimer);
         btnTimer.setOnClickListener(v -> showTimerDialog());
@@ -90,10 +102,47 @@ public class PhatNhacActivity extends AppCompatActivity {
         seekBarVolume = findViewById(R.id.seekBarVolume);
         btnVolume = findViewById(R.id.btnVolume);
         btnLove = findViewById(R.id.btnLove);
+        btnNextSong = findViewById(R.id.btnNext);
+        btnPreviousSong = findViewById(R.id.btnPrevious);
+
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("songList")) {
+            songIdList = intent.getStringArrayListExtra("songList");  // Vị trí bài hát hiện tại
+        }
+
+        btnNextSong.setOnClickListener(v -> {
+            if (musicService != null) {
+                musicService.playNext();
+                setupUI();
+            }
+        });
+
+        btnPreviousSong.setOnClickListener(v -> {
+            if (musicService != null) {
+                musicService.playPrevious();
+                setupUI();
+            }
+        });
 
         btnPlayList = findViewById(R.id.btnPlaylist);
         btnPlayList.setOnClickListener(v ->{
             Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
+        });
+
+
+        btnRepeat = findViewById(R.id.btnRepeat);
+        btnRepeat.setOnClickListener(v -> {
+            if (musicService != null) {
+                musicService.toggleLooping();
+                if (musicService.isLooping()) {
+                    Toast.makeText(PhatNhacActivity.this, "Lặp lại bài hát hiện tại: BẬT", Toast.LENGTH_SHORT).show();
+                    btnRepeat.setImageResource(R.drawable.repeat_1);
+                } else {
+                    Toast.makeText(PhatNhacActivity.this, "Lặp lại bài hát hiện tại: TẮT", Toast.LENGTH_SHORT).show();
+                    btnRepeat.setImageResource(R.drawable.repeat);
+                }
+            }
         });
 
 
@@ -102,13 +151,6 @@ public class PhatNhacActivity extends AppCompatActivity {
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         yeuThichDao = SongData.getInstance(this).yeuThichDao();
-        btnLove.setOnClickListener(view -> {
-            if (isFavorite) {
-                removeFavorite(currentSongId);
-            } else {
-                addFavorite(currentSongId);
-            }
-        });
 
         //Volume
         btnVolume.setOnClickListener(v -> {
@@ -127,6 +169,8 @@ public class PhatNhacActivity extends AppCompatActivity {
             finish();
         });
         setupVolumeControl();
+
+
     }
 
     @Override
@@ -135,7 +179,6 @@ public class PhatNhacActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
-
 
     @Override
     protected void onStop() {
@@ -172,6 +215,14 @@ public class PhatNhacActivity extends AppCompatActivity {
             tvTotalTime.setText(formatTime(totalTime));
             seekBarMusic.setMax(totalTime);
 
+            btnLove.setOnClickListener(view -> {
+                if (isFavorite) {
+                    removeFavorite(currentSongId);
+                } else {
+                    addFavorite(currentSongId);
+                }
+            });
+
             if(!musicService.isPlaying()){
                 musicService.resumeMusic();
                 btnPlayPause.setImageResource(R.drawable.pause);
@@ -193,7 +244,6 @@ public class PhatNhacActivity extends AppCompatActivity {
                 }
             });
 
-
             seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -208,10 +258,13 @@ public class PhatNhacActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
             });
-
         }
-
     }
+    private void playSong(String song) {
+        // Mã để phát bài hát
+        musicService.startMusic(utf8.decodeString(song));
+    }
+
 
     private void checkFavoriteStatus() {
         AsyncTask.execute(() -> {
@@ -230,7 +283,6 @@ public class PhatNhacActivity extends AppCompatActivity {
         AsyncTask.execute(() -> {
             YeuThich yeuThich = new YeuThich();
             yeuThich.setId_BaiHat(songId);
-
             yeuThichDao.addYeuThich(yeuThich);
 
             runOnUiThread(() -> {
@@ -244,7 +296,6 @@ public class PhatNhacActivity extends AppCompatActivity {
     private void removeFavorite(String songId) {
         AsyncTask.execute(() -> {
             yeuThichDao.removeYeuThich(songId);
-
             runOnUiThread(() -> {
                 isFavorite = false;
                 btnLove.setImageResource(R.drawable.unlove);

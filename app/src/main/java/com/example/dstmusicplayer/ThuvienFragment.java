@@ -1,16 +1,11 @@
-
 package com.example.dstmusicplayer;
 
-import static android.app.ProgressDialog.show;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
@@ -39,7 +34,6 @@ public class ThuvienFragment extends Fragment {
     private boolean select;
     private CustomSongAdapter adapter;
     private ListView listView;
-
 
     @Nullable
     @Override
@@ -71,8 +65,6 @@ public class ThuvienFragment extends Fragment {
         songListView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Toast.makeText(getActivity(), "Selected song: " , Toast.LENGTH_SHORT).show();
         });
-
-
 
 
         return view;

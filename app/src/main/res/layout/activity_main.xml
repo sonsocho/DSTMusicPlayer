@@ -32,14 +32,9 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="50dp"
+            app:layout_anchor="@id/bottomAppBar"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnPhatNhac"
             tools:ignore="MissingConstraints">
-
         </FrameLayout>
 
         <FrameLayout
@@ -50,7 +45,7 @@
             <FrameLayout
                 android:id="@+id/frame_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent">
 
             </FrameLayout>
         </FrameLayout>
@@ -67,7 +62,6 @@
         app:itemIconTint="@color/music"
         app:itemTextColor="@color/music"/>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -76,7 +76,6 @@ public class MiniPlayerFragment extends Fragment {
                 updateMiniPlayerUI();
             }
         });
-
         btnMiniExpand.setOnClickListener(v -> {
             if (musicService != null) {
                 Intent expandIntent = new Intent(getActivity(), PhatNhacActivity.class);

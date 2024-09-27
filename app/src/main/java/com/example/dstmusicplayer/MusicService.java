@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MusicService extends Service {
 
@@ -21,9 +22,10 @@ public class MusicService extends Service {
     private String currentSongArtist;
     private Bitmap currentAlbumArt;
     private String filePath;
-
+    private ArrayList<String> playlist = new ArrayList<>();
+    private int currentSongIndex = 0;
     private float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
-    private int currentSpeedIndex = 3;
+    private int currentSpeedIndex = 3; //Tốc độ mặc định
 
     public void setPlaybackSpeed(int index) {
         if (mediaPlayer != null && index >= 0 && index < playbackSpeeds.length) {
@@ -34,11 +36,15 @@ public class MusicService extends Service {
 
     private boolean isLooping = false; // Biến để kiểm tra chế độ phát lại
 
-    // Phương thức để thiết lập chế độ phát lại
-    public void setLooping(boolean looping) {
-        this.isLooping = looping;
+    public boolean isLooping() {
+        return isLooping;
     }
-
+    public void toggleLooping() {
+        isLooping = !isLooping;  // Đảo ngược trạng thái lặp
+        if (mediaPlayer != null) {
+            mediaPlayer.setLooping(isLooping);  // Cập nhật lại trạng thái lặp cho MediaPlayer
+        }
+    }
 
     public void setFilePath(String path) {
         this.filePath = path;
@@ -54,6 +60,47 @@ public class MusicService extends Service {
             }
         }
         updateSongInfo(filePath);
+    }
+
+    public void setPlaylist(ArrayList<String> playlist, int currentSongIndex) {
+        this.playlist = playlist;
+        this.currentSongIndex = currentSongIndex;
+        // Phát bài hát đầu tiên trong danh sách
+        startMusic(playlist.get(currentSongIndex));
+    }
+//    public void setSongIdList(ArrayList<String> songIdList) {
+//        this.songIdList = songIdList;
+//        this.currentSongIndex = 0; // Đặt lại chỉ số bài hát hiện tại về đầu danh sách
+//    }
+
+
+    private void playSongAtIndex(int index) {
+        if (playlist != null && !playlist.isEmpty()) {
+            currentSongIndex = index;
+            String filePath = playlist.get(currentSongIndex);
+            startMusic(filePath);
+        }
+    }
+    public void playNext() {
+        if (playlist != null && !playlist.isEmpty()) {
+            currentSongIndex++;
+            if (currentSongIndex >= playlist.size()) {
+                currentSongIndex = 0; // Quay lại bài đầu tiên nếu đến cuối
+            }
+            setFilePath(playlist.get(currentSongIndex)); // Cập nhật bài hát
+            startMusic(currentFilePath); // Phát bài hát mới
+        }
+    }
+
+    public void playPrevious() {
+        if (playlist != null && !playlist.isEmpty()) {
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = playlist.size() - 1; // Quay lại bài cuối nếu ở đầu danh sách
+            }
+            setFilePath(playlist.get(currentSongIndex)); // Cập nhật bài hát
+            startMusic(currentFilePath); // Phát bài hát mới
+        }
     }
 
     public class MusicBinder extends Binder {
@@ -76,6 +123,8 @@ public class MusicService extends Service {
                 mediaPlayer.prepare();
                 currentFilePath = filePath;
                 updateSongInfo(filePath);
+                mediaPlayer.setLooping(isLooping);
+                mediaPlayer.setOnCompletionListener(mp -> playNext());
                 mediaPlayer.start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -137,14 +186,6 @@ public class MusicService extends Service {
             currentPosition = mediaPlayer.getCurrentPosition();
             mediaPlayer.pause();
         }
-    }
-
-    public void playNext(){
-
-    }
-
-    public void playPrevious(){
-
     }
 
 

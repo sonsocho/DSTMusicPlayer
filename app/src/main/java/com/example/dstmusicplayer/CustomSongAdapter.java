@@ -7,10 +7,8 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +34,7 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         void onItemClick(Song song);
     }
 
-    public CustomSongAdapter(@NonNull Context context, List<Song> songs) {
+    public CustomSongAdapter(@NonNull Context context, List<Song> songs, OnItemClickListener listener) {
         super(context, R.layout.list_songs, songs);
         this.context = context;
         this.songs = songs;
@@ -46,6 +44,8 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         this.listener = listener;
         fetchIdBaiHat();
     }
+
+
     private void fetchIdBaiHat() {
         new Thread(() -> {
             List<String> idBaiHat = SongData.getInstance(getContext()).dspdao().getAllId();
@@ -100,27 +100,20 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
-                albumArtImageView.setImageResource(R.drawable.mainlogo);
+                albumArtImageView.setImageResource(R.drawable.default_image);
             }
 
-            bottomDialog dialog = new bottomDialog();
+
             properties.setOnClickListener(view -> {
-                dialog.showBottomDialog(getContext());
+                String songPath = song.getId_BaiHat();
+                Toast.makeText(getContext(), songPath, Toast.LENGTH_SHORT ).show();
+                listDSP.add(songPath);
+                DSP dsp = new DSP();
+//                dsp.setID_BaiHat(songPath);
+//                new Thread(() -> dspData.dspdao().insertDSP(dsp) );
             });
         }
 
-        convertView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(song);
-            }
-        });
-
-
-        //propertis click
-        ImageView img_properties = convertView.findViewById(R.id.img_properties);
-        img_properties.setOnClickListener(view -> {
-            
-        });
         return convertView;
     }
 

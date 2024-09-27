@@ -11,4 +11,10 @@
         android:layout_height="match_parent"
         android:text="@string/hello_blank_fragment" />
 
+    <Button
+        android:id="@+id/btnDSPNhac"
+        android:layout_width="300dp"
+        android:layout_height="146dp"
+        android:text="Phát danh sách nhạc" />
+
 </FrameLayout>
