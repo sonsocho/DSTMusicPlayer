@@ -2,6 +2,7 @@ package com.example.dstmusicplayer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,16 +28,24 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
     private final SongData dspData;
     private ArrayList<String> listDSP;
     private List<String> idBaiHatList;
+    private final OnItemClickListener listener;
 
-    public CustomSongAdapter(@NonNull Context context, List<Song> songs) {
+    public interface OnItemClickListener {
+        void onItemClick(Song song);
+    }
+
+    public CustomSongAdapter(@NonNull Context context, List<Song> songs, OnItemClickListener listener) {
         super(context, R.layout.list_songs, songs);
         this.context = context;
         this.songs = songs;
         this.dspData = SongData.getInstance(context);
         this.listDSP = new ArrayList<>();
         this.idBaiHatList = new ArrayList<>();
+        this.listener = listener;
         fetchIdBaiHat();
     }
+
+
     private void fetchIdBaiHat() {
         new Thread(() -> {
             List<String> idBaiHat = SongData.getInstance(getContext()).dspdao().getAllId();
@@ -49,7 +58,6 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             });
         }).start();
     }
-
 
     @NonNull
     @Override
@@ -67,8 +75,22 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
             titleTextView.setText(song.getTenBaiHat());
             artistTextView.setText(song.getTenNgheSi());
-
             String songPath2 = song.getId_BaiHat();
+
+//            convertView.setOnClickListener(v->{
+//                Intent sendID = new Intent(getContext(), MainActivity.class);
+//                sendID.putExtra("fileNhac", songPath2);
+//                getContext().startActivity(sendID);
+//            });
+            convertView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(song);
+                    Intent sendID = new Intent(getContext(), MainActivity.class);
+                    sendID.putExtra("fileNhac", songPath2);
+                    getContext().startActivity(sendID);
+                }
+            });
+
             Bitmap img = null;
             try {
                 img = SongImage.getImg(songPath2);
