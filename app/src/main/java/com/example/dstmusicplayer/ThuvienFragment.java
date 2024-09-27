@@ -96,10 +96,13 @@ public class ThuvienFragment extends Fragment {
         }
     }
 
+
     private void displaySongs() {
         List<Song> songs = db.songDao().getAllSongs();
         adapter = new CustomSongAdapter(requireContext(), songs, song -> {
+            // Xử lý sự kiện nhấp vào bài hát
             Toast.makeText(getActivity(), "Selected song: " + song.getTenBaiHat(), Toast.LENGTH_SHORT).show();
+            // Bạn có thể thêm mã ở đây để làm gì đó với bài hát đã chọn
         });
         songListView.setAdapter(adapter);
     }

@@ -2,15 +2,20 @@ package com.example.dstmusicplayer;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -37,11 +42,43 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
     private boolean select;
+
+    private static final int REQUEST_PERMISSION = 123;
+    private boolean isServiceBound = false;
+    private MusicService musicService;
+    private String fileNhac = "/mnt/shared/Pictures/Co Don Se Tot Hon.mp3";
+    private String fileNhac2 = "/mnt/shared/Pictures/Dau Yeu Ver2.mp3";
+    private MiniPlayerFragment miniPlayerFragment;
+    private utf8 utf8;
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent != null && intent.hasExtra("fileNhac")) {
+            String songID = intent.getStringExtra("fileNhac");
+            String fileGoc = utf8.decodeString(songID);
+            miniPlayerFragment.updateUI(fileGoc);
+            if (isServiceBound) {
+                musicService.stopMusic();
+                musicService.startMusic(fileGoc);
+                if (miniPlayerFragment != null) {
+                    miniPlayerFragment.updateUI(fileGoc);
+                }
+            }
+            openPhatNhacActivity(fileGoc);
+        }
+    }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Phat Nhac
+        Intent intent = getIntent();
+
         //check permission
         select = false;
         permissionManager = new addSong(this, getApplicationContext(), select);
@@ -52,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
-
 
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
@@ -68,16 +104,13 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setBackground(null);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-
             if (itemId == R.id.home) {
                 replaceFragment(new HomeFragment());
-            } else if (itemId == R.id.library) {
+            }else if (itemId == R.id.library) {
                 replaceFragment(new ThuvienFragment());
             } else if (itemId == R.id.playlist) {
-                replaceFragment(new playlistFragment());
+
             }
-
-
             return true;
         });
 
@@ -89,6 +122,13 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
+    }
+
+
+    private void openPhatNhacActivity(String fileGoc) {
+        Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
+        intentPhatNhac.putExtra("fileNhac", fileGoc);
+        startActivity(intentPhatNhac);
     }
 
     @Override
@@ -103,6 +143,62 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MusicFragment", "Request code or result code not matched");
         }
     }
+
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            musicService = binder.getService();
+            isServiceBound = true;
+
+            if (miniPlayerFragment != null) {
+                miniPlayerFragment.updateUI(musicService.getCurrentSongFilePath());
+            }
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isServiceBound = false;
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (miniPlayerFragment != null && isServiceBound) {
+            String currentSongFilePath = musicService.getCurrentSongFilePath();
+            miniPlayerFragment.updateUI(currentSongFilePath);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, MusicService.class);
+        startService(intent);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        miniPlayerFragment = new MiniPlayerFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+                .commit();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isServiceBound) {
+            unbindService(serviceConnection);
+            isServiceBound = false;
+        }
+        if (isFinishing() && isServiceBound) {
+            unbindService(serviceConnection);
+            isServiceBound = false;
+        }
+    }
+
+
+
 
 
     private void replaceFragment(Fragment fragment) {
