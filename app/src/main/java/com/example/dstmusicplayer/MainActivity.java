@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Phat Nhac
-        Intent intent = getIntent();
 
         //check permission
         select = false;
