@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/purple_200"
+            android:background="@color/music"
             android:orientation="horizontal">
 
             <ImageView
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:padding="6dp"
                     android:layout_marginRight="10dp"
-                    app:srcCompat="@drawable/shuffle_icon" />
+                    app:srcCompat="@drawable/shuffle_icon"/>
 
                 <ImageView
                     android:id="@+id/img_repeat"

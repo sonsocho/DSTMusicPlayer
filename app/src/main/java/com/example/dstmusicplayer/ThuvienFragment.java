@@ -1,7 +1,6 @@
 
 package com.example.dstmusicplayer;
 
-import static android.app.ProgressDialog.show;
 
 import android.os.Bundle;
 

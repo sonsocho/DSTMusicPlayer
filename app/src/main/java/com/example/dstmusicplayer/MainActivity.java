@@ -34,9 +34,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import connectDB.SongData;
+import entity.DSP;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RESULT_ADD = 29;
+    private static final int RESULT_LIST = 7;
+
+    private static final Random random = new Random();
     private addSong permissionManager;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -46,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION = 123;
     private boolean isServiceBound = false;
     private MusicService musicService;
-    private String fileNhac = "/mnt/shared/Pictures/Co Don Se Tot Hon.mp3";
-    private String fileNhac2 = "/mnt/shared/Pictures/Dau Yeu Ver2.mp3";
     private MiniPlayerFragment miniPlayerFragment;
     private utf8 utf8;
+
+    private SongData db;
+    public static ArrayList<String> DSPList;
 
 
     @Override
@@ -76,13 +86,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Phat Nhac
         Intent intent = getIntent();
 
         //check permission
         select = false;
         permissionManager = new addSong(this, getApplicationContext(), select);
         permissionManager.requestPermission();
+        db = SongData.getInstance(this);
+
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fab = findViewById(R.id.fab);
@@ -113,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-
+        createDSPList();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,9 +133,22 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
+
+
     }
 
+    private void createDSPList() {
+        new Thread(() -> {
+            try {
+                List<String> idBaiHat = db.dspdao().getAllId();
+                DSPList = new ArrayList<>(idBaiHat);
 
+
+            }catch (Exception e) {
+                Log.d("azcv", "lỗi Mainactivity");
+            }
+        }).start();
+    }
     private void openPhatNhacActivity(String fileGoc) {
         Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
         intentPhatNhac.putExtra("fileNhac", fileGoc);
@@ -136,11 +160,22 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == addSong.REQUEST_CODE_SONG_LIST && resultCode == RESULT_OK && data != null) {
             ArrayList<String> selectedSongs = data.getStringArrayListExtra("selectedSongs");
+            Toast.makeText(this, "REQUEST_CODE_SONG_LIST", Toast.LENGTH_SHORT).show();
 
         } else if (resultCode == RESULT_ADD) {
             bottomNavigationView.setSelectedItemId(R.id.library);
-        } else {
+            Toast.makeText(this, "RESULT_ADD", Toast.LENGTH_SHORT).show();
+
+        }else if (resultCode == RESULT_LIST) {
+            Intent intent = getIntent();
+            ArrayList<String> DSPList = intent.getStringArrayListExtra("DSPList");
+            for(String a : DSPList){
+                Log.d("azcvmain", a);
+            }
+            Toast.makeText(this, "RESULT_LIST", Toast.LENGTH_SHORT).show();
+        }else {
             Log.e("MusicFragment", "Request code or result code not matched");
+            Toast.makeText(this, "else", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -171,6 +206,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public static ArrayList<String> getDSPList() {
+        return DSPList;
+    }
+
+    public static void setDSPList(ArrayList<String> DSPList) {
+        MainActivity.DSPList = DSPList;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -181,6 +225,11 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.miniPlayerContainer, miniPlayerFragment)
                 .commit();
+        if (DSPList != null) {
+            for (String idBaiHat : DSPList) {
+                Log.d("aqer", idBaiHat);
+            }
+        }
 
     }
 
@@ -195,11 +244,21 @@ public class MainActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             isServiceBound = false;
         }
+
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new Thread(() -> {
+            db.dspdao().deleteDSP();
+            for (String idBaiHat : DSPList) {
+                db.dspdao().insertDSP(idBaiHat);
+            }
+        }).start();
 
-
-
+    }
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -255,4 +314,29 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
+    public static ArrayList<String> shuffle(ArrayList<String> listShuffle) {
+        if (listShuffle.isEmpty()) {
+            return null;
+        }
+
+        ArrayList<String> originalList = new ArrayList<>(listShuffle);
+
+        do {
+            Collections.shuffle(listShuffle, random);
+        } while (!isDifferentFromOriginal(listShuffle, originalList));
+
+        return listShuffle;
+    }
+
+    private static boolean isDifferentFromOriginal(ArrayList<String> shuffledList, ArrayList<String> originalList) {
+        for (int i = 0; i < shuffledList.size(); i++) {
+            if (shuffledList.get(i).equals(originalList.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
 }

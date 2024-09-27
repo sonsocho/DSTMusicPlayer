@@ -2,12 +2,14 @@ package com.example.dstmusicplayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +31,7 @@ public class DSPAdapter extends RecyclerView.Adapter<DSPAdapter.SongViewHolder> 
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.dspadapter, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.list_songs, parent, false);
         return new SongViewHolder(view);
     }
 
@@ -39,17 +41,35 @@ public class DSPAdapter extends RecyclerView.Adapter<DSPAdapter.SongViewHolder> 
         holder.nameTextView.setText(song.getTenBaiHat());
         holder.artistTextView.setText(song.getTenNgheSi());
 
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                        holder.itemView.setBackgroundColor(Color.RED); // Màu xám
+                        holder.itemView.setAlpha(0.5f); // Độ mờ
+                        break;
+                    case MotionEvent.ACTION_HOVER_EXIT:
+                        holder.itemView.setBackgroundColor(Color.TRANSPARENT); // Trở về màu gốc
+                        holder.itemView.setAlpha(1.0f); // Độ mờ ban đầu
+                        break;
+                }
+                return false;
+            }
+        });
+
         String songPath = song.getId_BaiHat();
         Bitmap img = null;
         try {
-            img = SongImage.getImg(songPath);
+            img = SongImage.getImg(songPath); // Lấy hình ảnh bài hát
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
         if (img != null) {
             holder.imageView.setImageBitmap(img);
         } else {
-            holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.default_image));
+            holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.logo)); // Hình ảnh mặc định nếu không tìm thấy
         }
     }
 
