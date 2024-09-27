@@ -2,12 +2,15 @@ package com.example.dstmusicplayer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,18 +28,25 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
     private final Context context;
     private final List<Song> songs;
     private final SongData dspData;
+    private final OnItemClickListener listener;
     private ArrayList<String> listDSP;
     private List<String> idBaiHatList;
 
-    public CustomSongAdapter(@NonNull Context context, List<Song> songs) {
+    public interface OnItemClickListener {
+        void onItemClick(Song song);
+    }
+
+    public CustomSongAdapter(@NonNull Context context, List<Song> songs, OnItemClickListener listener) {
         super(context, R.layout.list_songs, songs);
         this.context = context;
         this.songs = songs;
         this.dspData = SongData.getInstance(context);
         this.listDSP = new ArrayList<>();
         this.idBaiHatList = new ArrayList<>();
+        this.listener = listener;
         fetchIdBaiHat();
     }
+
     private void fetchIdBaiHat() {
         new Thread(() -> {
             List<String> idBaiHat = SongData.getInstance(getContext()).dspdao().getAllId();
@@ -78,20 +88,27 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
-                albumArtImageView.setImageResource(R.drawable.default_image);
+                albumArtImageView.setImageResource(R.drawable.mainlogo);
             }
 
-
+            bottomDialog dialog = new bottomDialog();
             properties.setOnClickListener(view -> {
-                String songPath = song.getId_BaiHat();
-                Toast.makeText(getContext(), songPath, Toast.LENGTH_SHORT ).show();
-                listDSP.add(songPath);
-                DSP dsp = new DSP();
-//                dsp.setID_BaiHat(songPath);
-//                new Thread(() -> dspData.dspdao().insertDSP(dsp) );
+                dialog.showBottomDialog(getContext());
             });
         }
 
+        convertView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(song);
+            }
+        });
+
+
+        //propertis click
+        ImageView img_properties = convertView.findViewById(R.id.img_properties);
+        img_properties.setOnClickListener(view -> {
+            
+        });
         return convertView;
     }
 

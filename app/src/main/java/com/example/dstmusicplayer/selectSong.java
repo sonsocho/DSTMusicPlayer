@@ -21,6 +21,7 @@ import entity.Song;
 
 public class selectSong extends AppCompatActivity {
 
+    private static final int RESULT_ADD = 29;
     private ListView listView;
     private Button sendButton;
     private ImageView img;
@@ -120,8 +121,8 @@ public class selectSong extends AppCompatActivity {
     }
 
     private void finishWithResult() {
-        Intent resultIntent = new Intent();
-        setResult(RESULT_OK, resultIntent);
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        setResult(RESULT_ADD, resultIntent);
         finish();
     }
 }

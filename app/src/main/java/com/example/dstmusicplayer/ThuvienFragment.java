@@ -16,6 +16,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +38,7 @@ public class ThuvienFragment extends Fragment {
     private addSong permissionManager;
     private boolean select;
     private CustomSongAdapter adapter;
-
+    private ListView listView;
 
 
     @Nullable
@@ -67,6 +68,9 @@ public class ThuvienFragment extends Fragment {
             startActivity(intentDSP);
 
         });
+        songListView.setOnItemClickListener((adapterView, view1, position, id) -> {
+            Toast.makeText(getActivity(), "Selected song: " , Toast.LENGTH_SHORT).show();
+        });
 
 
 
@@ -94,7 +98,9 @@ public class ThuvienFragment extends Fragment {
 
     private void displaySongs() {
         List<Song> songs = db.songDao().getAllSongs();
-        adapter = new CustomSongAdapter(requireContext(), songs);
+        adapter = new CustomSongAdapter(requireContext(), songs, song -> {
+            Toast.makeText(getActivity(), "Selected song: " + song.getTenBaiHat(), Toast.LENGTH_SHORT).show();
+        });
         songListView.setAdapter(adapter);
     }
 
