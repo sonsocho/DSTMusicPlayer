@@ -42,7 +42,7 @@
     <ListView
         android:id="@+id/recycler_songs"
         android:layout_width="match_parent"
-        android:layout_height="642dp" />
+        android:layout_height="wrap_content"/>
 
 
 

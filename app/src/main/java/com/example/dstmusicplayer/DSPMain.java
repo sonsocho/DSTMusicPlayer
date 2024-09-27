@@ -46,7 +46,7 @@ public class DSPMain extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        songList = getSongListFromDatabase();
+
 
         adapter = new DSPAdapter(this, songList);
         recyclerView.setAdapter(adapter);
@@ -122,6 +122,13 @@ public class DSPMain extends AppCompatActivity {
         ArrayList<String> idDsp = new ArrayList<>(idList);
         return idDsp;
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        songList = getSongListFromDatabase();
+    }
+
     private void showBottomDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

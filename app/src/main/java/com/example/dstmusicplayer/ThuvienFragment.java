@@ -38,7 +38,7 @@ public class ThuvienFragment extends Fragment {
     private addSong permissionManager;
     private boolean select;
     private CustomSongAdapter adapter;
-
+    private ListView listView;
 
 
     @Nullable
@@ -68,6 +68,9 @@ public class ThuvienFragment extends Fragment {
             startActivity(intentDSP);
 
         });
+        songListView.setOnItemClickListener((adapterView, view1, position, id) -> {
+            Toast.makeText(getActivity(), "Selected song: " , Toast.LENGTH_SHORT).show();
+        });
 
 
 
@@ -92,6 +95,7 @@ public class ThuvienFragment extends Fragment {
             Log.e("MusicFragment", "Request code or result code not matched");
         }
     }
+
 
     private void displaySongs() {
         List<Song> songs = db.songDao().getAllSongs();

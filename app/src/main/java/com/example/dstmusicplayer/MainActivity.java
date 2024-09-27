@@ -36,7 +36,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final int RESULT_ADD = 29;
     private addSong permissionManager;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == addSong.REQUEST_CODE_SONG_LIST && resultCode == RESULT_OK && data != null) {
             ArrayList<String> selectedSongs = data.getStringArrayListExtra("selectedSongs");
 
+        } else if (resultCode == RESULT_ADD) {
+            bottomNavigationView.setSelectedItemId(R.id.library);
         } else {
             Log.e("MusicFragment", "Request code or result code not matched");
         }
