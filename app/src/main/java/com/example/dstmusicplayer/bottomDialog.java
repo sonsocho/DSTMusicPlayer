@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import connectDB.SongData;
 
 public class bottomDialog {
     private SongData db;
+    private String songPath;
     public void showBottomDialog(Context context) {
         final Dialog dialog = new Dialog(context); // Sử dụng context thay vì 'this'
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -28,13 +30,30 @@ public class bottomDialog {
         LinearLayout chitiet = dialog.findViewById(R.id.chitiet);
         LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
         ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
-
+        LinearLayout danhsachcho = dialog.findViewById(R.id.danhsachcho);
         phatketiep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String idPhatNhac = db.dspdao().getPhatNhac();
-//                Toast.makeText(dialog.getContext(), idPhatNhac, Toast.LENGTH_SHORT).show();
+                String idPhatNhac = MainActivity.getIdPhatNhac();
+                if (idPhatNhac != null) {
+                    int index = MainActivity.getDSPList().indexOf(idPhatNhac);
+                    index += 1;
+                    MainActivity.getDSPList().add(index, songPath);
+                } else {
+                    Log.e("Error", "idPhatNhac is null, unable to find index.");
+                }
                 dialog.dismiss();
+            }
+        });
+
+        danhsachcho.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MainActivity.getIdPhatNhac() != null){
+                    MainActivity.getDSPList().add(songPath);
+                    dialog.dismiss();
+                }
+
             }
         });
 
@@ -116,5 +135,9 @@ public class bottomDialog {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation; // Đảm bảo style này tồn tại
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    public void setSongPath(String songPath) {
+        this.songPath = songPath;
     }
 }

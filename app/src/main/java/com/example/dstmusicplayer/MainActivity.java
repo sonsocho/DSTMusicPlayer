@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private MiniPlayerFragment miniPlayerFragment;
     private SongData db;
     public static ArrayList<String> DSPList= new ArrayList<>();;
+    public static String idPhatNhac;
+
 
 
     @Override
@@ -372,6 +374,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    public static String getIdPhatNhac() {
+        return idPhatNhac;
+    }
+
+    public static void setIdPhatNhac(String idPhatNhac) {
+        MainActivity.idPhatNhac = idPhatNhac;
     }
 
 
