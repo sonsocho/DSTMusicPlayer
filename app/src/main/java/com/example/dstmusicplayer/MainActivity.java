@@ -253,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("aqeraa", "start");
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -286,17 +285,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("aqeraa", "stop");
+        Log.d("aqwe", "stop");
         if(DSPList != null) {
             new Thread(() -> {
                 db.dspdao().deleteDSP();
                 for (String idBaiHat : DSPList) {
+                    Log.d("aqwe", idBaiHat);
                     db.dspdao().insertDSP(idBaiHat);
+
                 }
                 if (idPhatNhac != null) { // Kiểm tra xem idPhatNhac có null không
                     db.dspdao().updatePhatNhac(idPhatNhac);
                 }else{
-                    Log.d("idPhatNhac", "khong co idphatnhac");
+                    Log.d("aqwe", "khong co idphatnhac");
                 }
             }).start();
         }

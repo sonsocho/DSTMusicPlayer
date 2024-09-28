@@ -2,6 +2,8 @@ package com.example.dstmusicplayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,17 +47,16 @@ public class addSongAdapter extends ArrayAdapter<Song> {
             artistTextView.setText(song.getTenNgheSi());
 
             String songPath = song.getId_BaiHat();
-            Bitmap img = null;
-            try {
-                img = SongImage.getImg(songPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (img != null) {
-                albumArtImageView.setImageBitmap(img);
+            Bitmap currentAlbumArt;
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(utf8.decodeString(songPath));
+            byte[] art = retriever.getEmbeddedPicture();
+            if (art != null) {
+                currentAlbumArt = BitmapFactory.decodeByteArray(art, 0, art.length);
+                albumArtImageView.setImageBitmap(currentAlbumArt);
             } else {
-                albumArtImageView.setImageResource(R.drawable.mainlogo);
+                currentAlbumArt = null;
+                albumArtImageView.setImageResource(R.drawable.default_item);
             }
 
             selectCheckBox.setOnCheckedChangeListener(null);
