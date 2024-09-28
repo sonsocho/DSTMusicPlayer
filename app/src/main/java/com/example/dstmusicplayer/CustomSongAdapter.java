@@ -91,7 +91,6 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                     getContext().startActivity(sendID);
                 }
             });
-
             Bitmap img = null;
             try {
                 img = SongImage.getImg(songPath2);
@@ -106,7 +105,7 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
 
             properties.setOnClickListener(view -> {
-//                dialog.showBottomDialog(getContext());
+
 
                 if (songPath2 != null) {
 //                    new Thread(() -> {
@@ -139,7 +138,8 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         //propertis click
         ImageView img_properties = convertView.findViewById(R.id.img_properties);
         img_properties.setOnClickListener(view -> {
-            
+            bottomDialog dialog = new bottomDialog();
+            dialog.showBottomDialog(context,song);
         });
         return convertView;
     }

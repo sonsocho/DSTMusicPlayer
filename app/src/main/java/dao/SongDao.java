@@ -29,4 +29,6 @@ public interface SongDao {
 
 //    @Query("UPDATE BaiHat SET id_Playlist = :id_playlist Where id_BaiHat = :id_BaiHat ")
 //    void updatePlaylist(String id_playlist, String id_BaiHat);
+    @Query("UPDATE BaiHat SET tenBaiHat = :newSongName, tenNgheSi = :newArtistName, namPhatHanh = :newReleaseYear WHERE id_BaiHat = :id")
+    void updateSongById(String id, String newSongName, String newArtistName, String newReleaseYear);
 }

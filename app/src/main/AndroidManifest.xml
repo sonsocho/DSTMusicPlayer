@@ -16,7 +16,7 @@
         android:theme="@style/Theme.DSTMUSICPLAYER"
         tools:targetApi="31">
         <activity android:name=".selectSong" />
-        <activity android:name=".DSPMain" />
+        <activity android:name=".DSPMain"></activity>
         <activity android:name=".PhatNhacActivity"/>
         <activity
             android:name=".MainActivity"

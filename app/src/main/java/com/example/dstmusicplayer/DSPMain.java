@@ -1,5 +1,7 @@
 package com.example.dstmusicplayer;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;

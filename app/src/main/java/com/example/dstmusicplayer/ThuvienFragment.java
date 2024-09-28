@@ -97,5 +97,4 @@ public class ThuvienFragment extends Fragment {
         songListView.setAdapter(adapter);
     }
 
-
 }

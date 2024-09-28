@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -149,6 +150,14 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu từ tệp XML
+        getMenuInflater().inflate(R.menu.search, menu);
+
+
+        return true; // Trả về true để menu hiển thị
     }
     private void createDSPList() {
         new Thread(() -> {

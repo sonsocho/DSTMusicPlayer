@@ -6,16 +6,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".HomeFragment">
-    <Button
-        android:id="@+id/btndsp"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="Danh sách phát" />
-    <Button
-        android:id="@+id/playlist"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="Playlist" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp">
+        <Button
+            android:id="@+id/btndsp"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Danh sách phát" />
+
+        <Button
+            android:id="@+id/playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Playlist" />
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,8 +54,7 @@
     <ListView
         android:id="@+id/recycler_songs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>
