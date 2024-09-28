@@ -57,9 +57,13 @@ public class MainActivity extends AppCompatActivity {
     private MiniPlayerFragment miniPlayerFragment;
     private utf8 utf8;
     private SongData db;
+<<<<<<< HEAD
     public static ArrayList<String> DSPList= new ArrayList<>();;
     public static String idPhatNhac;
 
+=======
+    public static ArrayList<String> DSPList;
+>>>>>>> ec8d59f179719284ac32782f1f43a26a6abd2660
 
 
     @Override
@@ -273,22 +277,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("aqwe", "stop");
-        if(DSPList != null) {
-            new Thread(() -> {
-                db.dspdao().deleteDSP();
-                for (String idBaiHat : DSPList) {
-                    Log.d("aqwe", idBaiHat);
-                    db.dspdao().insertDSP(idBaiHat);
-
-                }
-                if (idPhatNhac != null) { // Kiểm tra xem idPhatNhac có null không
-                    db.dspdao().updatePhatNhac(idPhatNhac);
-                }else{
-                    Log.d("aqwe", "khong co idphatnhac");
-                }
-            }).start();
-        }
+        new Thread(() -> {
+            db.dspdao().deleteDSP();
+            for (String idBaiHat : DSPList) {
+                db.dspdao().insertDSP(idBaiHat);
+            }
+        }).start();
 
     }
 

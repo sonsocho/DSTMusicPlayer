@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import connectDB.SongData;
-import dao.SongDao;
 import entity.Song;
 
 public class Chitiet {
