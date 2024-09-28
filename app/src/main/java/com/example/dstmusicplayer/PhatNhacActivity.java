@@ -110,9 +110,6 @@ public class PhatNhacActivity extends AppCompatActivity {
 
     }
 
-    public String getCurrentSongId(){
-        return currentSongId;
-    }
 
     @Override
     protected void onStop() {
@@ -155,7 +152,6 @@ public class PhatNhacActivity extends AppCompatActivity {
 
             currentSongId = utf8.encodeString(musicService.getCurrentSongFilePath());
             checkFavoriteStatus(currentSongId);
-
 
             if(!musicService.isPlaying()){
                 musicService.resumeMusic();
@@ -258,7 +254,7 @@ public class PhatNhacActivity extends AppCompatActivity {
                 } else {
                     addFavorite(currentSongId);
                 }
-                checkFavoriteStatus(currentSongId); // Kiểm tra lại trạng thái yêu thích
+                checkFavoriteStatus(currentSongId);
             });
             seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -391,13 +387,12 @@ public class PhatNhacActivity extends AppCompatActivity {
             }
         };
 
-        // Đặt bộ đếm giờ mới
         timerHandler.postDelayed(timerRunnable, delayMillis);
     }
 
     private void cancelTimer() {
         if (timerRunnable != null) {
-            timerHandler.removeCallbacks(timerRunnable); // Hủy bộ đếm giờ
+            timerHandler.removeCallbacks(timerRunnable);
             timerRunnable = null;
         }
     }

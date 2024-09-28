@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Random;
 
 import connectDB.SongData;
+import dao.DSPDao;
 import entity.DSP;
 
 import connectDB.SongData;
@@ -53,14 +54,12 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
     private boolean select;
-
-    private static final int REQUEST_PERMISSION = 123;
     private boolean isServiceBound = false;
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
     private SongData db;
     public static ArrayList<String> DSPList= new ArrayList<>();;
-
+    private DSPDao dspDao;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -111,23 +110,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Intent intent = new Intent(this, MusicService.class);
-//        startService(intent);
-//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-//        miniPlayerFragment = new MiniPlayerFragment();
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.miniPlayerContainer, miniPlayerFragment)
-//                    .commit();
-//        }
-
 
         //check permission
         select = false;
         permissionManager = new addSong(this, getApplicationContext(), select);
         permissionManager.requestPermission();
         db = SongData.getInstance(this);
-
+        dspDao = SongData.getInstance(this).dspdao();
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fab = findViewById(R.id.fab);
@@ -168,11 +157,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         createDSPList();
+
     }
 
 
     private void createDSPList() {
-        Log.d("qeraa", "createDSPList");
 
         new Thread(() -> {
             try {
@@ -251,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("aqeraa", "start");
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -259,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.miniPlayerContainer, miniPlayerFragment)
                 .commit();
+
         if (DSPList != null) {
             for (String idBaiHat : DSPList) {
                 Log.d("aqer", idBaiHat);
@@ -293,8 +282,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
 
 
     private void replaceFragment(Fragment fragment) {

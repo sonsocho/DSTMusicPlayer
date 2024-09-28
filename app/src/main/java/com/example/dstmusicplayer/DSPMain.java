@@ -42,7 +42,6 @@ public class DSPMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dsp);
 
-        // Khởi tạo cơ sở dữ liệu
         db = Room.databaseBuilder(getApplicationContext(), SongData.class, "music.db")
                 .allowMainThreadQueries()
                 .build();
@@ -68,7 +67,7 @@ public class DSPMain extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                // Không sử dụng swipe
+
             }
 
             @Override
@@ -136,10 +135,6 @@ public class DSPMain extends AppCompatActivity {
                 img_shuffle.setElevation(0);
             }, 200);
         });
-
-
-
-
 
     }
 

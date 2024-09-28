@@ -27,13 +27,7 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <FrameLayout
-            android:id="@+id/miniPlayerContainer"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom"
-            app:layout_anchor="@id/bottomAppBar"
-            tools:ignore="MissingConstraints"></FrameLayout>
+
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -44,6 +38,16 @@
                 android:id="@+id/frame_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/miniPlayerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="52dp"
+                app:layout_anchor="@id/bottomAppBar"
+                tools:ignore="MissingConstraints">
 
             </FrameLayout>
         </FrameLayout>
@@ -68,7 +72,7 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:id="@+id/bottomAppBar"
             android:layout_gravity="bottom"
             android:background="@color/music"
@@ -81,7 +85,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/bottomNavigationView"
                 android:layout_marginEnd="8dp"
-                app:labelVisibilityMode="labeled"
                 android:background="@android:color/transparent"
                 app:menu="@menu/bottom_menu" />
 
