@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> songList = intent.getStringArrayListExtra("songList");
             if (songList != null && !songList.isEmpty()) {
                 musicService.setPlaylist(songList, -1);
-                musicService.playNext();
+                musicService.playNext(true);
             }
             openDanhSachPhatNhacActivity(songList);
         }
@@ -106,15 +106,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
+        Intent intent = new Intent(this, MusicService.class);
+        startService(intent);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        miniPlayerFragment = new MiniPlayerFragment();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+                    .commit();
+        }
+
 
         //check permission
         select = false;
@@ -162,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
     private void createDSPList() {
         new Thread(() -> {
             try {
@@ -174,12 +183,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-
-//    private void openPhatNhacActivity(String fileGoc) {
-//        Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
-//        intentPhatNhac.putExtra("fileNhac", fileGoc);
-//        startActivity(intentPhatNhac);
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -244,13 +247,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, MusicService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        miniPlayerFragment = new MiniPlayerFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.miniPlayerContainer, miniPlayerFragment)
-                .commit();
+//        Intent intent = new Intent(this, MusicService.class);
+//        startService(intent);
+//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        miniPlayerFragment = new MiniPlayerFragment();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+//                .commit();
         if (DSPList != null) {
             for (String idBaiHat : DSPList) {
                 Log.d("aqer", idBaiHat);

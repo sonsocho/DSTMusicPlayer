@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -19,11 +20,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import connectDB.SongData;
+import dao.SongDao;
 import dao.YeuThichDao;
 import entity.YeuThich;
 
@@ -39,8 +42,9 @@ public class PhatNhacActivity extends AppCompatActivity {
     private boolean isServiceBound = false;
     private int currentPosition;
     private boolean isUpdatingSeekBar = false;
-    private String currentSongId;
+    private String currentSongId, thoiGianNghe;
     private YeuThichDao yeuThichDao;
+    private SongDao songDao;
     private boolean isFavorite;
     private Runnable timerRunnable;
     private Handler timerHandler = new Handler();
@@ -106,6 +110,7 @@ public class PhatNhacActivity extends AppCompatActivity {
         startService(serviceIntent);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+        songDao = SongData.getInstance(this).songDao();
         yeuThichDao = SongData.getInstance(this).yeuThichDao();
 
     }
@@ -137,7 +142,11 @@ public class PhatNhacActivity extends AppCompatActivity {
             tenNgheSi.setSelected(true);
             tenBaiHat.setText(musicService.getCurrentSongTitle());
             tenNgheSi.setText(musicService.getCurrentSongArtist());
-            imageVinyl.setImageBitmap(musicService.getCurrentAlbumArt());
+            if(musicService.getCurrentAlbumArt() != null){
+                imageVinyl.setImageBitmap(musicService.getCurrentAlbumArt());
+            }else{
+                imageVinyl.setImageResource(R.drawable.default_item);
+            }
             currentPosition = musicService.getCurrentPosition();
             seekBarMusic.setProgress(currentPosition);
             tvCurrentTime.setText(formatTime(currentPosition));
@@ -147,7 +156,6 @@ public class PhatNhacActivity extends AppCompatActivity {
             seekBarMusic.setMax(totalTime);
             currentSongId = utf8.encodeString(musicService.getCurrentSongFilePath());
             checkFavoriteStatus(currentSongId);
-
             if(!musicService.isPlaying()){
                 musicService.resumeMusic();
                 btnPlayPause.setImageResource(R.drawable.pause);
@@ -155,6 +163,7 @@ public class PhatNhacActivity extends AppCompatActivity {
             }else {
                 btnPlayPause.setImageResource(R.drawable.pause);
             }
+
             btnPlayPause.setOnClickListener(v -> {
                 if (musicService != null) {
                     if (!musicService.isPlaying()) {
@@ -168,19 +177,38 @@ public class PhatNhacActivity extends AppCompatActivity {
                     }
                 }
             });
+
             btnPlayList.setOnClickListener(v ->{
-                Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
             });
 
+            AsyncTask.execute(() -> {
+                thoiGianNghe = GetCurrentTime.getCurrentTime();
+                songDao.updateThoiGianNghe(currentSongId, thoiGianNghe);
+
+            });
+            new Thread(() -> {
+                songDao.incrementSoLanNghe(currentSongId);
+            }).start();
             btnNextSong.setOnClickListener(v -> {
                 if (musicService != null) {
-                    musicService.playNext();
+                    if (musicService.getRepeatMode() == MusicService.REPEAT_ONE) {
+                        musicService.setRepeatMode(MusicService.NO_REPEAT);
+                        Toast.makeText(PhatNhacActivity.this, "Tắt lặp lại bài hát hiện tại", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat); // Cập nhật UI
+                    }
+                    musicService.playNext(true);
                     setupUI();
                 }
             });
 
             btnPreviousSong.setOnClickListener(v -> {
                 if (musicService != null) {
+                    if (musicService.getRepeatMode() == MusicService.REPEAT_ONE) {
+                        musicService.setRepeatMode(MusicService.NO_REPEAT);
+                        Toast.makeText(PhatNhacActivity.this, "Tắt lặp lại bài hát hiện tại", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat); // Cập nhật UI
+                    }
                     musicService.playPrevious();
                     setupUI();
                 }

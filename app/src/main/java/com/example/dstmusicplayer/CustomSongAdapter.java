@@ -1,9 +1,14 @@
 package com.example.dstmusicplayer;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.media.MediaMetadataRetriever;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +35,10 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
     private ArrayList<String> listDSP;
     private List<String> idBaiHatList;
     private final OnItemClickListener listener;
+    private utf8 utf8;
+    private ImageView albumArtImageView, properties;
+    private TextView titleTextView, artistTextView;
+
 
     public interface OnItemClickListener {
         void onItemClick(Song song);
@@ -60,6 +69,7 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         }).start();
     }
 
+    @SuppressLint("CutPasteId")
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -69,20 +79,19 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
         Song song = getItem(position);
         if (song != null) {
-            TextView titleTextView = convertView.findViewById(R.id.song_name);
-            TextView artistTextView = convertView.findViewById(R.id.song_artist);
-            ImageView albumArtImageView = convertView.findViewById(R.id.song_image);
-            ImageView properties = convertView.findViewById(R.id.img_properties);
+            titleTextView = convertView.findViewById(R.id.song_name);
+            artistTextView = convertView.findViewById(R.id.song_artist);
+            albumArtImageView = convertView.findViewById(R.id.song_image);
+            properties = convertView.findViewById(R.id.img_properties);
 
             titleTextView.setText(song.getTenBaiHat());
+            titleTextView.setSingleLine(true);
+            titleTextView.setEllipsize(TextUtils.TruncateAt.END);
             artistTextView.setText(song.getTenNgheSi());
+            artistTextView.setSingleLine(true);
+            artistTextView.setEllipsize(TextUtils.TruncateAt.END);
             String songPath2 = song.getId_BaiHat();
 
-//            convertView.setOnClickListener(v->{
-//                Intent sendID = new Intent(getContext(), MainActivity.class);
-//                sendID.putExtra("fileNhac", songPath2);
-//                getContext().startActivity(sendID);
-//            });
             convertView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(song);
@@ -92,17 +101,19 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                 }
             });
 
-            Bitmap img = null;
-            try {
-                img = SongImage.getImg(songPath2);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (img != null) {
-                albumArtImageView.setImageBitmap(img);
+
+            Bitmap currentAlbumArt;
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(utf8.decodeString(songPath2));
+            byte[] art = retriever.getEmbeddedPicture();
+            if (art != null) {
+                currentAlbumArt = BitmapFactory.decodeByteArray(art, 0, art.length);
+                albumArtImageView.setImageBitmap(currentAlbumArt);
             } else {
-                albumArtImageView.setImageResource(R.drawable.default_image);
+                currentAlbumArt = null;
+                albumArtImageView.setImageResource(R.drawable.default_item);
             }
+
 
 
             properties.setOnClickListener(view -> {
@@ -128,12 +139,6 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             });
 
         }
-
-        convertView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(song);
-            }
-        });
 
 
         //propertis click

@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ public class MusicService extends Service {
     private int currentSongIndex = 0;
     private float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
     private int currentSpeedIndex = 3; //Tốc độ mặc định
-
 
 
     public void setPlaybackSpeed(int index) {
@@ -105,45 +105,57 @@ public class MusicService extends Service {
     public void startMusic(String filePath) {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
-            this.filePath = filePath;
-            try {
-                mediaPlayer.setDataSource(filePath);
-                mediaPlayer.prepare();
-                currentFilePath = filePath;
-                updateSongInfo(filePath);
-                mediaPlayer.setLooping(repeatMode == REPEAT_ONE);
-                mediaPlayer.setOnCompletionListener(mp -> playNext());
-                mediaPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } else {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.seekTo(currentPosition);
-                mediaPlayer.start();
-            }
+            mediaPlayer.reset();
+        }
+        this.filePath = filePath;
+        try {
+            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.prepare();
+            currentFilePath = filePath;
+            updateSongInfo(filePath);
+
+            mediaPlayer.setLooping(repeatMode == REPEAT_ONE);
+
+            mediaPlayer.setOnCompletionListener(mp -> {
+                if (repeatMode == REPEAT_ONE) {
+                    startMusic(currentFilePath);
+                } else {
+                    playNext(false);
+                }
+            });
+
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void playNext() {
+    public void playNext(boolean isManual) {
         if (playlist != null && !playlist.isEmpty()) {
+
             currentSongIndex++;
+            // Kiểm tra chế độ lặp và hành động của người dùng
             if (currentSongIndex >= playlist.size()) {
-                if (repeatMode == REPEAT_ALL) {
+                if (repeatMode == NO_REPEAT) {
+                    if (isManual) {
+                        currentSongIndex = 0;
+                    } else {
+                        stopMusic();
+                        return;
+                    }
+                } else if (repeatMode == REPEAT_ALL) {
                     currentSongIndex = 0;
-                } else {
-                    stopMusic();
-                    return;
                 }
             }
             seekTo(0);
             setFilePath(playlist.get(currentSongIndex));
             startMusic(currentFilePath);
+
             if (songChangeListener != null) {
                 songChangeListener.onSongChanged(currentFilePath);
             }
         }
-
     }
 
     public void playPrevious() {

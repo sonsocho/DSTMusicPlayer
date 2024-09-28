@@ -79,7 +79,7 @@ public class MiniPlayerFragment extends Fragment {
 
         btnMiniNext.setOnClickListener(v ->{
             if(musicService != null){
-                musicService.playNext();
+                musicService.playNext(true);
                 updateMiniPlayerUI();
             }
         });
@@ -100,21 +100,6 @@ public class MiniPlayerFragment extends Fragment {
             }
         });
 
-//        // Sự kiện Next/Previous
-//        btnMiniNext.setOnClickListener(v -> {
-//            if (musicService != null) {
-//                musicService.playNext();
-//                updateMiniPlayerUI(); // Cập nhật lại UI sau khi phát bài tiếp theo
-//            }
-//        });
-//
-//        btnMiniPrevious.setOnClickListener(v -> {
-//            if (musicService != null) {
-//                musicService.playPrevious();
-//                updateMiniPlayerUI(); // Cập nhật lại UI sau khi phát bài trước
-//            }
-//        });
-
         return view;
     }
 
@@ -127,7 +112,7 @@ public class MiniPlayerFragment extends Fragment {
             if (albumArt != null) {
                 btnMiniExpand.setImageBitmap(albumArt);
             } else {
-                btnMiniExpand.setImageResource(R.drawable.disc);
+                btnMiniExpand.setImageResource(R.drawable.default_item);
             }
         }
     }
