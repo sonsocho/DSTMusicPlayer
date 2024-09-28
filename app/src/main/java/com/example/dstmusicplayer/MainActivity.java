@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
     private SongData db;
-    public static ArrayList<String> DSPList= new ArrayList<>();;
+        public static ArrayList<String> DSPList= new ArrayList<>();;
     public static String idPhatNhac;
 
 
