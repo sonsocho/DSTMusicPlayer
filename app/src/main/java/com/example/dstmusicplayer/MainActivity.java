@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,6 +34,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
+import connectDB.SongData;
+import dao.YeuThichDao;
+
 public class MainActivity extends AppCompatActivity {
     private static final int RESULT_ADD = 29;
     private addSong permissionManager;
@@ -51,43 +55,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         if (intent != null && intent.hasExtra("fileNhac")) {
             String songID = intent.getStringExtra("fileNhac");
             String fileGoc = utf8.decodeString(songID);
             miniPlayerFragment.updateUI(fileGoc);
             if (isServiceBound) {
+                musicService.clearDanhSachPhat();
                 musicService.stopMusic();
                 musicService.startMusic(fileGoc);
-                if (miniPlayerFragment != null) {
-                    miniPlayerFragment.updateUI(fileGoc);
-                }
+                miniPlayerFragment.updateUI(fileGoc);  // Cập nhật UI
             }
             openPhatNhacActivity(fileGoc);
         }
+
         if (intent != null && intent.hasExtra("songList")) {
             ArrayList<String> songList = intent.getStringArrayListExtra("songList");
             if (songList != null && !songList.isEmpty()) {
-                // Gọi phương thức để thiết lập danh sách bài hát trong MusicService
-                musicService.setPlaylist(songList,0);
-                musicService.startMusic(songList.get(0)); // Bắt đầu phát bài đầu tiên
+                musicService.setPlaylist(songList, -1);
+                musicService.playNext();
             }
             openDanhSachPhatNhacActivity(songList);
         }
     }
 
-    private void openDanhSachPhatNhacActivity(ArrayList<String> songIdList){
+    private void openDanhSachPhatNhacActivity(ArrayList<String> songIdList) {
         Intent intent = new Intent(this, PhatNhacActivity.class);
         intent.putStringArrayListExtra("songList", songIdList);
         intent.putExtra("currentSongIndex", 0); // Vị trí bài hát hiện tại
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Tránh mở Activity nhiều lần
         startActivity(intent);
     }
-
 
     private void openPhatNhacActivity(String fileGoc) {
         Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
         intentPhatNhac.putExtra("fileNhac", fileGoc);
+        intentPhatNhac.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Đảm bảo không khởi tạo lại Activity nhiều lần
         startActivity(intentPhatNhac);
     }
+
 
 
     @SuppressLint("NonConstantResourceId")
@@ -191,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.miniPlayerContainer, miniPlayerFragment)
                 .commit();
-
     }
 
     @Override
