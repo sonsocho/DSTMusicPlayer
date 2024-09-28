@@ -36,5 +36,26 @@ public interface SongDao {
     @Query("SELECT * FROM BaiHat WHERE tenBaiHat LIKE :query OR tenNgheSi LIKE :query OR album LIKE :query")
     List<Song> searchSongs(String query);
 
+    @Query("UPDATE BaiHat SET tenBaiHat = :newSongName, tenNgheSi = :newArtistName, namPhatHanh = :newReleaseYear WHERE id_BaiHat = :id")
+    void updateSongById(String id, String newSongName, String newArtistName, String newReleaseYear);
+
+
+
+    //sy
+    @Query("SELECT id_BaiHat FROM BaiHat")
+    List<String> getAllSongId();
+
+    @Query("SELECT album FROM BaiHat")
+    List<String> getAllAlbum();
+
+    @Query("SELECT id_BaiHat FROM BaiHat WHERE album = :album")
+    List<String> getBaiHatAlbum( String album);
+
+
+    @Query("SELECT tenNgheSi FROM BaiHat")
+    List<String> getAllNgheSi();
+
+    @Query("SELECT id_BaiHat FROM BaiHat WHERE tenNgheSi = :tenNgheSi")
+    List<String> getBaiHatNgheSi( String tenNgheSi);
 
 }

@@ -123,8 +123,8 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
             properties.setOnClickListener(view -> {
 
-                dialog.setSongPath(songPath2);
-                dialog.showBottomDialog(getContext());
+                bottomDialog dialog = new bottomDialog();
+                dialog.showBottomDialog(context,song);
             });
 
 

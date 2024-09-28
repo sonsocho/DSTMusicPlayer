@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -154,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.home) {
                 replaceFragment(new HomeFragment());
             }else if (itemId == R.id.library) {
-                replaceFragment(new ThuvienFragment());
+                replaceFragment(new ThuViennFragment());
             } else if (itemId == R.id.playlist) {
                 replaceFragment(new playlistFragment());
             }
@@ -171,7 +172,14 @@ public class MainActivity extends AppCompatActivity {
         });
         createDSPList();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        getMenuInflater().inflate(R.menu.search, menu);
+
+
+        return true;
+    }
 
     private void createDSPList() {
         Log.d("qeraa", "createDSPList");

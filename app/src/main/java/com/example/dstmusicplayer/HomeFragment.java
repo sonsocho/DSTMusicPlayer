@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Gọi showBottomDialog khi click
-                dialog.showBottomDialog(getContext());
+//                dialog.showBottomDialog(getContext());
             }
         });
 
