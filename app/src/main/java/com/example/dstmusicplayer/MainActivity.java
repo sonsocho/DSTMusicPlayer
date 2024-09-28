@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private MiniPlayerFragment miniPlayerFragment;
     private utf8 utf8;
     private SongData db;
-        public static ArrayList<String> DSPList= new ArrayList<>();;
+    public static ArrayList<String> DSPList= new ArrayList<>();;
     public static String idPhatNhac;
 
 
@@ -372,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-
+    public static void setIdPhatNhac(String idPhatNhac) {
+        MainActivity.idPhatNhac = idPhatNhac;
+    }
 }
