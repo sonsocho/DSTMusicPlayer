@@ -9,7 +9,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
+
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,12 +33,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import connectDB.SongData;
+import entity.DSP;
 
 import connectDB.SongData;
 import dao.YeuThichDao;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RESULT_ADD = 29;
+    private static final int RESULT_LIST = 7;
+
+    private static final Random random = new Random();
     private addSong permissionManager;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -50,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
     private utf8 utf8;
-    private ArrayList<String> songIdList;
+    private SongData db;
+    public static ArrayList<String> DSPList;
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -96,15 +107,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+
         //check permission
         select = false;
         permissionManager = new addSong(this, getApplicationContext(), select);
         permissionManager.requestPermission();
+        db = SongData.getInstance(this);
+
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fab = findViewById(R.id.fab);
@@ -135,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-
+        createDSPList();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,18 +162,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void createDSPList() {
+        new Thread(() -> {
+            try {
+                List<String> idBaiHat = db.dspdao().getAllId();
+                DSPList = new ArrayList<>(idBaiHat);
 
+
+            }catch (Exception e) {
+                Log.d("azcv", "lỗi Mainactivity");
+            }
+        }).start();
+    }
+
+//    private void openPhatNhacActivity(String fileGoc) {
+//        Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
+//        intentPhatNhac.putExtra("fileNhac", fileGoc);
+//        startActivity(intentPhatNhac);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == addSong.REQUEST_CODE_SONG_LIST && resultCode == RESULT_OK && data != null) {
             ArrayList<String> selectedSongs = data.getStringArrayListExtra("selectedSongs");
+            Toast.makeText(this, "REQUEST_CODE_SONG_LIST", Toast.LENGTH_SHORT).show();
 
         } else if (resultCode == RESULT_ADD) {
             bottomNavigationView.setSelectedItemId(R.id.library);
-        } else {
+            Toast.makeText(this, "RESULT_ADD", Toast.LENGTH_SHORT).show();
+
+        }else if (resultCode == RESULT_LIST) {
+            Intent intent = getIntent();
+            ArrayList<String> DSPList = intent.getStringArrayListExtra("DSPList");
+            for(String a : DSPList){
+                Log.d("azcvmain", a);
+            }
+            Toast.makeText(this, "RESULT_LIST", Toast.LENGTH_SHORT).show();
+        }else {
             Log.e("MusicFragment", "Request code or result code not matched");
+            Toast.makeText(this, "else", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -187,6 +232,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public static ArrayList<String> getDSPList() {
+        return DSPList;
+    }
+
+    public static void setDSPList(ArrayList<String> DSPList) {
+        MainActivity.DSPList = DSPList;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -197,6 +251,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.miniPlayerContainer, miniPlayerFragment)
                 .commit();
+        if (DSPList != null) {
+            for (String idBaiHat : DSPList) {
+                Log.d("aqer", idBaiHat);
+            }
+        }
+
     }
 
     @Override
@@ -211,6 +271,18 @@ public class MainActivity extends AppCompatActivity {
             isServiceBound = false;
         }
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new Thread(() -> {
+            db.dspdao().deleteDSP();
+            for (String idBaiHat : DSPList) {
+                db.dspdao().insertDSP(idBaiHat);
+            }
+        }).start();
+
+    }
+
 
 
 
@@ -268,4 +340,29 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
+    public static ArrayList<String> shuffle(ArrayList<String> listShuffle) {
+        if (listShuffle.isEmpty()) {
+            return null;
+        }
+
+        ArrayList<String> originalList = new ArrayList<>(listShuffle);
+
+        do {
+            Collections.shuffle(listShuffle, random);
+        } while (!isDifferentFromOriginal(listShuffle, originalList));
+
+        return listShuffle;
+    }
+
+    private static boolean isDifferentFromOriginal(ArrayList<String> shuffledList, ArrayList<String> originalList) {
+        for (int i = 0; i < shuffledList.size(); i++) {
+            if (shuffledList.get(i).equals(originalList.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
 }

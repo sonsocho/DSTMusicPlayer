@@ -1,6 +1,7 @@
 package com.example.dstmusicplayer;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -27,18 +28,19 @@ import java.util.List;
 import connectDB.SongData;
 import entity.Song;
 
-
 public class DSPMain extends AppCompatActivity {
     private SongData db;
     private RecyclerView recyclerView;
     private DSPAdapter adapter;
     private List<Song> songList;
+    private ArrayList<String> DSPList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dsp);
 
+        // Khởi tạo cơ sở dữ liệu
         db = Room.databaseBuilder(getApplicationContext(), SongData.class, "music.db")
                 .allowMainThreadQueries()
                 .build();
@@ -46,25 +48,25 @@ public class DSPMain extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-
-
+        songList = getSongListFromDatabase();
         adapter = new DSPAdapter(this, songList);
         recyclerView.setAdapter(adapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
-
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();
                 int toPosition = target.getAdapterPosition();
                 Collections.swap(songList, fromPosition, toPosition);
                 adapter.notifyItemMoved(fromPosition, toPosition);
+                updateDSPList();
                 return true;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                // Không sử dụng swipe
             }
 
             @Override
@@ -93,87 +95,56 @@ public class DSPMain extends AppCompatActivity {
         });
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
-        List<String> idBaiHat = getAllId();
 
-        for(String id : idBaiHat){
-            Log.d("idBaiHat", id);
-        }
+        ImageView img_back = findViewById(R.id.img_back);
+        img_back.setOnClickListener(view -> finish());
+        ImageView img_shuffle = findViewById(R.id.img_shuffle);
+        img_shuffle.setOnClickListener(view -> {
+            DSPList = MainActivity.shuffle(DSPList);
+
+            MainActivity.setDSPList(DSPList);
+
+            songList = getSongListFromDatabase();
+
+            updateDSPList();
+
+            adapter = new DSPAdapter(this, songList);
+            recyclerView.setAdapter(adapter);
+
+            img_shuffle.setAlpha(0.5f);
+            img_shuffle.setElevation(10);
+
+            img_shuffle.postDelayed(() -> {
+                img_shuffle.setAlpha(1.0f);
+                img_shuffle.setElevation(0);
+            }, 200);
+        });
+
+
 
 
 
     }
 
     private List<Song> getSongListFromDatabase() {
-        ArrayList<String> listDSP = getIntent().getStringArrayListExtra("listDSP");
+        DSPList = MainActivity.getDSPList();
         List<Song> songList = new ArrayList<>();
-
-        for (String dsp : listDSP) {
-            List<Song> songs = db.songDao().getSongId(dsp);
-
-            if (songs != null && !songs.isEmpty()) {
-                songList.addAll(songs);
+        if (DSPList != null) {
+            for (String dsp : DSPList) {
+                Log.d("idBaiHat", dsp);
+                List<Song> songs = db.songDao().getSongId(dsp);
+                if (songs != null && !songs.isEmpty()) {
+                    songList.addAll(songs);
+                }
             }
         }
         return songList;
     }
 
-    private ArrayList<String> getAllId(){
-        List<String> idList = db.dspdao().getAllId();
-        ArrayList<String> idDsp = new ArrayList<>(idList);
-        return idDsp;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        songList = getSongListFromDatabase();
-    }
-
-    private void showBottomDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottomsheetlayout);
-
-        LinearLayout videoLayout = dialog.findViewById(R.id.phatketiep);
-        LinearLayout shortsLayout = dialog.findViewById(R.id.themvaoplaylist);
-        LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
-        ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
-
-        videoLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-
-            }
-        });
-
-        shortsLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-
-            }
-        });
-
-        liveLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-
-            }
-        });
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    private void updateDSPList() {
+        DSPList.clear();
+        for (Song song : songList) {
+            DSPList.add(song.getId_BaiHat());
+        }
     }
 }

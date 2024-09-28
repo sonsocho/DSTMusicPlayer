@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,15 +106,41 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
 
             properties.setOnClickListener(view -> {
-                String songPath = song.getId_BaiHat();
-                Toast.makeText(getContext(), songPath, Toast.LENGTH_SHORT ).show();
-                listDSP.add(songPath);
-                DSP dsp = new DSP();
-//                dsp.setID_BaiHat(songPath);
-//                new Thread(() -> dspData.dspdao().insertDSP(dsp) );
+//                dialog.showBottomDialog(getContext());
+
+                if (songPath2 != null) {
+//                    new Thread(() -> {
+//                        try {
+//                            dspData.dspdao().insertDSP(songPath2);
+//                            Log.d("InsertDSP", songPath2);
+//                        } catch (Exception e) {
+//                            Log.e("InsertDSP", "Error inserting DSP: ", e);
+//                        }
+//                    }).start();
+                   ArrayList<String> a = MainActivity.getDSPList();
+                   a.add(songPath2);
+                    MainActivity.setDSPList(a);
+
+                } else {
+                    Toast.makeText(context, "Song path is null!", Toast.LENGTH_SHORT).show();
+                }
+
             });
+
         }
 
+        convertView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(song);
+            }
+        });
+
+
+        //propertis click
+        ImageView img_properties = convertView.findViewById(R.id.img_properties);
+        img_properties.setOnClickListener(view -> {
+            
+        });
         return convertView;
     }
 
