@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_marginBottom="105dp"
     tools:context=".HomeFragment">
 
     <LinearLayout
@@ -13,20 +14,7 @@
         android:orientation="horizontal"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp">
-        <Button
-            android:id="@+id/btndsp"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="Danh sách phát" />
-
-        <Button
-            android:id="@+id/playlist"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="Playlist" />
-
-    </LinearLayout>
+        android:layout_marginRight="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,8 +25,9 @@
         android:layout_marginRight="10dp">
 
         <TextView
+            android:id="@+id/soBaiHat"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="6 Bài hát" />
         <View
             android:layout_width="0dp"

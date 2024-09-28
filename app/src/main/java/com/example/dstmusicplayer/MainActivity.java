@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -40,6 +41,9 @@ import java.util.Random;
 import connectDB.SongData;
 import entity.DSP;
 
+import connectDB.SongData;
+import dao.YeuThichDao;
+
 public class MainActivity extends AppCompatActivity {
     private static final int RESULT_ADD = 29;
     private static final int RESULT_LIST = 7;
@@ -55,46 +59,53 @@ public class MainActivity extends AppCompatActivity {
     private boolean isServiceBound = false;
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
-    private utf8 utf8;
     private SongData db;
-    public static ArrayList<String> DSPList;
+    public static ArrayList<String> DSPList= new ArrayList<>();;
+    public static String idPhatNhac;
+
 
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         if (intent != null && intent.hasExtra("fileNhac")) {
             String songID = intent.getStringExtra("fileNhac");
             String fileGoc = utf8.decodeString(songID);
             miniPlayerFragment.updateUI(fileGoc);
             if (isServiceBound) {
+                musicService.clearDanhSachPhat();
                 musicService.stopMusic();
                 musicService.startMusic(fileGoc);
-                if (miniPlayerFragment != null) {
-                    miniPlayerFragment.updateUI(fileGoc);
-                }
+                miniPlayerFragment.updateUI(fileGoc);  // Cập nhật UI
             }
             openPhatNhacActivity(fileGoc);
         }
+
         if (intent != null && intent.hasExtra("songList")) {
             ArrayList<String> songList = intent.getStringArrayListExtra("songList");
             if (songList != null && !songList.isEmpty()) {
-                // Gọi phương thức để thiết lập danh sách bài hát trong MusicService
-                musicService.setPlaylist(songList,0);
-                musicService.startMusic(songList.get(0)); // Bắt đầu phát bài đầu tiên
+                musicService.setPlaylist(songList, -1);
+                musicService.playNext(true);
             }
             openDanhSachPhatNhacActivity(songList);
         }
     }
 
-    private void openDanhSachPhatNhacActivity(ArrayList<String> songIdList){
+    private void openDanhSachPhatNhacActivity(ArrayList<String> songIdList) {
         Intent intent = new Intent(this, PhatNhacActivity.class);
         intent.putStringArrayListExtra("songList", songIdList);
         intent.putExtra("currentSongIndex", 0); // Vị trí bài hát hiện tại
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Tránh mở Activity nhiều lần
         startActivity(intent);
     }
 
-
+    private void openPhatNhacActivity(String fileGoc) {
+        Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
+        intentPhatNhac.putExtra("fileNhac", fileGoc);
+        intentPhatNhac.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Đảm bảo không khởi tạo lại Activity nhiều lần
+        startActivity(intentPhatNhac);
+    }
 
 
     @SuppressLint("NonConstantResourceId")
@@ -103,7 +114,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
+//        Intent intent = new Intent(this, MusicService.class);
+//        startService(intent);
+//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        miniPlayerFragment = new MiniPlayerFragment();
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+//                    .commit();
+//        }
+
 
         //check permission
         select = false;
@@ -141,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-        createDSPList();
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
+        createDSPList();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,23 +180,29 @@ public class MainActivity extends AppCompatActivity {
 
         return true; // Trả về true để menu hiển thị
     }
+
+
     private void createDSPList() {
+        Log.d("qeraa", "createDSPList");
+
         new Thread(() -> {
             try {
-                List<String> idBaiHat = db.dspdao().getAllId();
-                DSPList = new ArrayList<>(idBaiHat);
+                List<String> idBaiHats = db.dspdao().getAllId();
+                if (idBaiHats != null && !idBaiHats.isEmpty()) {
+                    for(String songID : idBaiHats) {
+                        DSPList.add(songID);
+                        Log.d("qeraa", songID);
+                    }
 
-
-            }catch (Exception e) {
-                Log.d("azcv", "lỗi Mainactivity");
+                } else {
+                    Log.d("qeraa", "Không có ID nào được trả về từ cơ sở dữ liệu.");
+                }
+            } catch (Exception e) {
+                Log.d("azcv", "lỗi Mainactivity: " + e.getMessage());
             }
         }).start();
-    }
 
-    private void openPhatNhacActivity(String fileGoc) {
-        Intent intentPhatNhac = new Intent(MainActivity.this, PhatNhacActivity.class);
-        intentPhatNhac.putExtra("fileNhac", fileGoc);
-        startActivity(intentPhatNhac);
+
     }
 
     @Override
@@ -189,13 +216,7 @@ public class MainActivity extends AppCompatActivity {
             bottomNavigationView.setSelectedItemId(R.id.library);
             Toast.makeText(this, "RESULT_ADD", Toast.LENGTH_SHORT).show();
 
-        }else if (resultCode == RESULT_LIST) {
-            Intent intent = getIntent();
-            ArrayList<String> DSPList = intent.getStringArrayListExtra("DSPList");
-            for(String a : DSPList){
-                Log.d("azcvmain", a);
-            }
-            Toast.makeText(this, "RESULT_LIST", Toast.LENGTH_SHORT).show();
+
         }else {
             Log.e("MusicFragment", "Request code or result code not matched");
             Toast.makeText(this, "else", Toast.LENGTH_SHORT).show();
@@ -241,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("aqeraa", "start");
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -271,12 +293,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        new Thread(() -> {
-            db.dspdao().deleteDSP();
-            for (String idBaiHat : DSPList) {
-                db.dspdao().insertDSP(idBaiHat);
-            }
-        }).start();
+        Log.d("aqeraa", "stop");
+        if(DSPList != null) {
+            new Thread(() -> {
+                db.dspdao().deleteDSP();
+                for (String idBaiHat : DSPList) {
+                    db.dspdao().insertDSP(idBaiHat);
+                }
+                db.dspdao().updatePhatNhac(idPhatNhac);
+            }).start();
+        }
 
     }
 
@@ -358,6 +384,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    public static String getIdPhatNhac() {
+        return idPhatNhac;
+    }
+
+    public static void setIdPhatNhac(String idPhatNhac) {
+        MainActivity.idPhatNhac = idPhatNhac;
     }
 
 

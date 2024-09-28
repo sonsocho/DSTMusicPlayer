@@ -75,8 +75,8 @@ public class MusicService extends Service {
         this.playlist = playlist;
         this.currentSongIndex = currentSongIndex;
         if(mediaPlayer != null){
-        mediaPlayer.reset();
-        startMusic(playlist.get(0));
+            mediaPlayer.reset();
+            startMusic(playlist.get(0));
         }else{
             startMusic(playlist.get(0));
         }
