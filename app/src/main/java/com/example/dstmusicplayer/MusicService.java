@@ -114,9 +114,7 @@ public class MusicService extends Service {
             mediaPlayer.prepare();
             currentFilePath = filePath;
             updateSongInfo(filePath);
-
             mediaPlayer.setLooping(repeatMode == REPEAT_ONE);
-
             mediaPlayer.setOnCompletionListener(mp -> {
                 if (repeatMode == REPEAT_ONE) {
                     startMusic(currentFilePath);

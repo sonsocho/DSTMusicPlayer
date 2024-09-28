@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -20,10 +19,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import connectDB.SongData;
 import dao.SongDao;
@@ -115,6 +110,9 @@ public class PhatNhacActivity extends AppCompatActivity {
 
     }
 
+    public String getCurrentSongId(){
+        return currentSongId;
+    }
 
     @Override
     protected void onStop() {
@@ -154,8 +152,11 @@ public class PhatNhacActivity extends AppCompatActivity {
             int totalTime = musicService.getDuration();
             tvTotalTime.setText(formatTime(totalTime));
             seekBarMusic.setMax(totalTime);
+
             currentSongId = utf8.encodeString(musicService.getCurrentSongFilePath());
             checkFavoriteStatus(currentSongId);
+
+
             if(!musicService.isPlaying()){
                 musicService.resumeMusic();
                 btnPlayPause.setImageResource(R.drawable.pause);
@@ -179,7 +180,9 @@ public class PhatNhacActivity extends AppCompatActivity {
             });
 
             btnPlayList.setOnClickListener(v ->{
-                // Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, DSPMain.class);
+                intent.putExtra("idBaiHatDangPhat", currentSongId);
+                startActivity(intent);
             });
 
             AsyncTask.execute(() -> {

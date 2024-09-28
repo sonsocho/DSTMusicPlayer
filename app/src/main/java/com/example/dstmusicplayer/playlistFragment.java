@@ -26,6 +26,7 @@ public class playlistFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -89,8 +90,8 @@ public class playlistFragment extends Fragment {
 
         btnDSPNhac = view.findViewById(R.id.btnDSPNhac);
         btnDSPNhac.setOnClickListener(v ->{
-            Intent intent = new Intent(getContext(), SearchActivity.class);
-            getContext().startActivity(intent);
+//            String songID = phatNhacActivity.getCurrentSongId();
+//            Toast.makeText(getContext(), songID, Toast.LENGTH_SHORT).show();
         });
 
         return view;
