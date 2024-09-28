@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             miniPlayerFragment.updateUI(fileGoc);
             if (isServiceBound) {
                 musicService.clearDanhSachPhat();
-                musicService.stopMusic();
+                musicService.seekTo(0);
                 musicService.startMusic(fileGoc);
                 miniPlayerFragment.updateUI(fileGoc);  // Cập nhật UI
             }
@@ -281,6 +281,8 @@ public class MainActivity extends AppCompatActivity {
             isServiceBound = false;
         }
     }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -291,11 +293,16 @@ public class MainActivity extends AppCompatActivity {
                 for (String idBaiHat : DSPList) {
                     db.dspdao().insertDSP(idBaiHat);
                 }
-                db.dspdao().updatePhatNhac(idPhatNhac);
+                if (idPhatNhac != null) { // Kiểm tra xem idPhatNhac có null không
+                    db.dspdao().updatePhatNhac(idPhatNhac);
+                }else{
+                    Log.d("idPhatNhac", "khong co idphatnhac");
+                }
             }).start();
         }
 
     }
+
 
 
 

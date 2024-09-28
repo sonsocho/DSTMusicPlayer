@@ -137,8 +137,7 @@ public class DSPMain extends AppCompatActivity {
             }, 200);
         });
 
-        String idPhatNhac = MainActivity.getIdPhatNhac();
-        Toast.makeText(this, idPhatNhac, Toast.LENGTH_SHORT).show();
+
 
 
 
