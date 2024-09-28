@@ -45,10 +45,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="52dp"
+                android:layout_marginBottom="80dp"
                 app:layout_anchor="@id/bottomAppBar"
+                android:visibility="visible"
                 tools:ignore="MissingConstraints">
-
             </FrameLayout>
         </FrameLayout>
 
@@ -72,7 +72,7 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:layout_width="wrap_content"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
             android:id="@+id/bottomAppBar"
             android:layout_gravity="bottom"
             android:background="@color/music"
@@ -85,6 +85,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/bottomNavigationView"
                 android:layout_marginEnd="8dp"
+                app:labelVisibilityMode="labeled"
                 android:background="@android:color/transparent"
                 app:menu="@menu/bottom_menu" />
 
