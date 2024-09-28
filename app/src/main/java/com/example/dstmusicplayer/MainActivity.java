@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
                 for (String idBaiHat : DSPList) {
                     db.dspdao().insertDSP(idBaiHat);
                 }
+                db.dspdao().updatePhatNhac(idPhatNhac);
             }).start();
         }
 

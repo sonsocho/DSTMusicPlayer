@@ -19,22 +19,18 @@ public class DSP {
     int STT;
     String id_BaiHat;
 
-    Boolean phatNhac;
+    int phatNhac;
 
-    public DSP(int STT, String id_BaiHat) {
-        this.STT = STT;
-        this.id_BaiHat = id_BaiHat;
-        this.phatNhac = false;
-    }
 
-    public DSP(int STT, String id_BaiHat, Boolean phatNhac) {
+
+    public DSP(int STT, String id_BaiHat, int phatNhac) {
         this.STT = STT;
         this.id_BaiHat = id_BaiHat;
         this.phatNhac = phatNhac;
     }
 
     public DSP() {
-        this.phatNhac = false;
+        this.phatNhac = 0;
     }
 
     public int getSTT() {
@@ -53,11 +49,11 @@ public class DSP {
         this.id_BaiHat = id_BaiHat;
     }
 
-    public Boolean getPhatNhac() {
+    public int getPhatNhac() {
         return phatNhac;
     }
 
-    public void setPhatNhac(Boolean phatNhac) {
+    public void setPhatNhac(int phatNhac) {
         this.phatNhac = phatNhac;
     }
 }

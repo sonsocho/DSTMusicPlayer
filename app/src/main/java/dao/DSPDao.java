@@ -19,12 +19,13 @@ public interface DSPDao {
    @Query("SELECT id_BaiHat FROM DanhSachPhat")
     List<String> getAllId();
 
-   @Query("INSERT INTO DanhSachPhat(id_BaiHat) VALUES(:id)")
+   @Query("INSERT INTO DanhSachPhat(id_BaiHat, phatNhac) VALUES(:id, 0)")
     void insertDSP(String id);
 
    @Query("DELETE FROM DanhSachPhat")
     void deleteDSP();
 
-   @Query("SELECT id_BaiHat FROM DanhSachPhat WHERE PhatNhac = True")
-    String getPhatNhac();
+   @Query("UPDATE DanhSachPhat SET phatNhac = 1 WHERE id_BaiHat = :idBaiHat")
+    void updatePhatNhac(String idBaiHat);
+
 }

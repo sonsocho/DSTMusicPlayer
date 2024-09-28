@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,6 +43,8 @@ public class ThuvienFragment extends Fragment {
                 .build();
 
         songListView = view.findViewById(R.id.recycler_songs);
+        TextView soBaiHat = view.findViewById(R.id.soBaiHat);
+
         boolean select = false;
         permissionManager = new addSong(requireActivity(), requireContext(), select);
 
@@ -50,18 +53,13 @@ public class ThuvienFragment extends Fragment {
         } else {
             displaySongs();
         }
-        Button btnDSP = view.findViewById(R.id.btndsp);
-        btnDSP.setOnClickListener(v -> {
-            Intent intentDSP = new Intent(getActivity(), DSPMain.class);
-            ArrayList<String> listDsp = adapter.getListDSP();
-            intentDSP.putStringArrayListExtra("listDSP", listDsp);
-            startActivity(intentDSP);
 
-        });
         songListView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Toast.makeText(getActivity(), "Selected song: " , Toast.LENGTH_SHORT).show();
         });
-
+        List<Song> songList = db.songDao().getAllSongs();
+        int countBaiHat = songList.size();
+        soBaiHat.setText(countBaiHat + " Bài Hát");
 
         return view;
     }
