@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             miniPlayerFragment.updateUI(fileGoc);
             if (isServiceBound) {
                 musicService.clearDanhSachPhat();
-                musicService.stopMusic();
+                musicService.seekTo(0);
                 musicService.startMusic(fileGoc);
                 miniPlayerFragment.updateUI(fileGoc);  // Cập nhật UI
             }
