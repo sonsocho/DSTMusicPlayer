@@ -12,8 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import connectDB.SongData;
 
 public class bottomDialog {
+    private SongData db;
     public void showBottomDialog(Context context) {
         final Dialog dialog = new Dialog(context); // Sử dụng context thay vì 'this'
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -28,7 +32,8 @@ public class bottomDialog {
         phatketiep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                String idPhatNhac = db.dspdao().getPhatNhac();
+//                Toast.makeText(dialog.getContext(), idPhatNhac, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });

@@ -24,4 +24,7 @@ public interface DSPDao {
 
    @Query("DELETE FROM DanhSachPhat")
     void deleteDSP();
+
+   @Query("SELECT id_BaiHat FROM DanhSachPhat WHERE PhatNhac = True")
+    String getPhatNhac();
 }
