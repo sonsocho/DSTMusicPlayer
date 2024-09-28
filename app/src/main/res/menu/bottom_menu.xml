@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/home"
-        android:title="Trang chủ"
+        android:title=""
         android:icon="@drawable/ic_baseline_home_24"/>
 
     <item
         android:id="@+id/shorts"
-        android:title="Browser"
+        android:title=""
         android:icon="@drawable/baseline_open_in_browser_24"
         />
 
@@ -18,11 +18,13 @@
 
     <item
         android:id="@+id/playlist"
-        android:title="Playlist"
-        android:icon="@drawable/baseline_subscriptions_24" />
+
+        android:icon="@drawable/baseline_subscriptions_24"
+        android:title="" />
     <item
         android:id="@+id/library"
-        android:title="Thư viện"
-        android:icon="@drawable/baseline_library_music_24" />
+
+        android:icon="@drawable/baseline_library_music_24"
+        android:title="" />
 
 </menu>

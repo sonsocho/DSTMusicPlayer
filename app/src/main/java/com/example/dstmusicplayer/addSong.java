@@ -1,4 +1,4 @@
-package com.example.dstmusicplayer;
+package com .example.dstmusicplayer;
 
 import android.Manifest;
 import android.app.Activity;

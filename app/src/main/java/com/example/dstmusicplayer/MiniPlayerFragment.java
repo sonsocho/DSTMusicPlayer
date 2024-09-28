@@ -76,6 +76,22 @@ public class MiniPlayerFragment extends Fragment {
                 updateMiniPlayerUI();
             }
         });
+
+        btnMiniNext.setOnClickListener(v ->{
+            if(musicService != null){
+                musicService.playNext(true);
+                updateMiniPlayerUI();
+            }
+        });
+
+        btnMiniPrevious.setOnClickListener(v ->{
+            if(musicService != null){
+                musicService.playPrevious();
+                updateMiniPlayerUI();
+            }
+        });
+
+
         btnMiniExpand.setOnClickListener(v -> {
             if (musicService != null) {
                 Intent expandIntent = new Intent(getActivity(), PhatNhacActivity.class);
@@ -83,21 +99,6 @@ public class MiniPlayerFragment extends Fragment {
                 startActivity(expandIntent);
             }
         });
-
-//        // Sự kiện Next/Previous
-//        btnMiniNext.setOnClickListener(v -> {
-//            if (musicService != null) {
-//                musicService.playNext();
-//                updateMiniPlayerUI(); // Cập nhật lại UI sau khi phát bài tiếp theo
-//            }
-//        });
-//
-//        btnMiniPrevious.setOnClickListener(v -> {
-//            if (musicService != null) {
-//                musicService.playPrevious();
-//                updateMiniPlayerUI(); // Cập nhật lại UI sau khi phát bài trước
-//            }
-//        });
 
         return view;
     }
@@ -111,7 +112,7 @@ public class MiniPlayerFragment extends Fragment {
             if (albumArt != null) {
                 btnMiniExpand.setImageBitmap(albumArt);
             } else {
-                btnMiniExpand.setImageResource(R.drawable.disc);
+                btnMiniExpand.setImageResource(R.drawable.default_item);
             }
         }
     }

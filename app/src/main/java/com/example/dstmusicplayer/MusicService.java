@@ -8,11 +8,17 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class MusicService extends Service {
+
+    public static final int NO_REPEAT = 0;
+    public static final int REPEAT_ONE = 1;
+    public static final int REPEAT_ALL = 2;
+    private int repeatMode = NO_REPEAT;
 
     private MediaPlayer mediaPlayer;
     private final IBinder binder = new MusicBinder();
@@ -27,6 +33,7 @@ public class MusicService extends Service {
     private float[] playbackSpeeds = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
     private int currentSpeedIndex = 3; //Tốc độ mặc định
 
+
     public void setPlaybackSpeed(int index) {
         if (mediaPlayer != null && index >= 0 && index < playbackSpeeds.length) {
             currentSpeedIndex = index;
@@ -34,17 +41,19 @@ public class MusicService extends Service {
         }
     }
 
-    private boolean isLooping = false; // Biến để kiểm tra chế độ phát lại
-
-    public boolean isLooping() {
-        return isLooping;
-    }
-    public void toggleLooping() {
-        isLooping = !isLooping;  // Đảo ngược trạng thái lặp
-        if (mediaPlayer != null) {
-            mediaPlayer.setLooping(isLooping);  // Cập nhật lại trạng thái lặp cho MediaPlayer
+    public void setRepeatMode(int mode) {
+        this.repeatMode = mode;
+        if (mode == REPEAT_ONE && mediaPlayer != null) {
+            mediaPlayer.setLooping(true);
+        } else if (mediaPlayer != null) {
+            mediaPlayer.setLooping(false);
         }
     }
+
+    public int getRepeatMode() {
+        return repeatMode;
+    }
+
 
     public void setFilePath(String path) {
         this.filePath = path;
@@ -65,43 +74,22 @@ public class MusicService extends Service {
     public void setPlaylist(ArrayList<String> playlist, int currentSongIndex) {
         this.playlist = playlist;
         this.currentSongIndex = currentSongIndex;
-        // Phát bài hát đầu tiên trong danh sách
-        startMusic(playlist.get(currentSongIndex));
-    }
-//    public void setSongIdList(ArrayList<String> songIdList) {
-//        this.songIdList = songIdList;
-//        this.currentSongIndex = 0; // Đặt lại chỉ số bài hát hiện tại về đầu danh sách
-//    }
-
-
-    private void playSongAtIndex(int index) {
-        if (playlist != null && !playlist.isEmpty()) {
-            currentSongIndex = index;
-            String filePath = playlist.get(currentSongIndex);
-            startMusic(filePath);
-        }
-    }
-    public void playNext() {
-        if (playlist != null && !playlist.isEmpty()) {
-            currentSongIndex++;
-            if (currentSongIndex >= playlist.size()) {
-                currentSongIndex = 0; // Quay lại bài đầu tiên nếu đến cuối
-            }
-            setFilePath(playlist.get(currentSongIndex)); // Cập nhật bài hát
-            startMusic(currentFilePath); // Phát bài hát mới
+        if(mediaPlayer != null){
+        mediaPlayer.reset();
+        startMusic(playlist.get(0));
+        }else{
+            startMusic(playlist.get(0));
         }
     }
 
-    public void playPrevious() {
-        if (playlist != null && !playlist.isEmpty()) {
-            currentSongIndex--;
-            if (currentSongIndex < 0) {
-                currentSongIndex = playlist.size() - 1; // Quay lại bài cuối nếu ở đầu danh sách
-            }
-            setFilePath(playlist.get(currentSongIndex)); // Cập nhật bài hát
-            startMusic(currentFilePath); // Phát bài hát mới
+    public void clearDanhSachPhat() {
+        if (playlist != null) {
+            playlist.clear();
         }
+        currentSongIndex = -1;
     }
+
+
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -117,24 +105,75 @@ public class MusicService extends Service {
     public void startMusic(String filePath) {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
-            this.filePath = filePath;
-            try {
-                mediaPlayer.setDataSource(filePath);
-                mediaPlayer.prepare();
-                currentFilePath = filePath;
-                updateSongInfo(filePath);
-                mediaPlayer.setLooping(isLooping);
-                mediaPlayer.setOnCompletionListener(mp -> playNext());
-                mediaPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         } else {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.seekTo(currentPosition);
-                mediaPlayer.start();
+            mediaPlayer.reset();
+        }
+        this.filePath = filePath;
+        try {
+            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.prepare();
+            currentFilePath = filePath;
+            updateSongInfo(filePath);
+            mediaPlayer.setLooping(repeatMode == REPEAT_ONE);
+            mediaPlayer.setOnCompletionListener(mp -> {
+                if (repeatMode == REPEAT_ONE) {
+                    startMusic(currentFilePath);
+                } else {
+                    playNext(false);
+                }
+            });
+
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playNext(boolean isManual) {
+        if (playlist != null && !playlist.isEmpty()) {
+
+            currentSongIndex++;
+            // Kiểm tra chế độ lặp và hành động của người dùng
+            if (currentSongIndex >= playlist.size()) {
+                if (repeatMode == NO_REPEAT) {
+                    if (isManual) {
+                        currentSongIndex = 0;
+                    } else {
+                        stopMusic();
+                        return;
+                    }
+                } else if (repeatMode == REPEAT_ALL) {
+                    currentSongIndex = 0;
+                }
+            }
+            seekTo(0);
+            setFilePath(playlist.get(currentSongIndex));
+            startMusic(currentFilePath);
+
+            if (songChangeListener != null) {
+                songChangeListener.onSongChanged(currentFilePath);
             }
         }
+    }
+
+    public void playPrevious() {
+        if (playlist != null && !playlist.isEmpty()) {
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = playlist.size() - 1;
+            }
+            seekTo(0);
+            setFilePath(playlist.get(currentSongIndex));
+            startMusic(currentFilePath);
+        }
+    }
+
+    private OnSongChangeListener songChangeListener;
+    public interface OnSongChangeListener {
+        void onSongChanged(String newFilePath);
+    }
+    public void setOnSongChangeListener(OnSongChangeListener listener) {
+        this.songChangeListener = listener;
     }
 
     private void updateSongInfo(String filePath) {
@@ -190,10 +229,9 @@ public class MusicService extends Service {
 
 
     public void stopMusic() {
-        if (mediaPlayer != null) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
-            currentPosition = 0;
         }
     }
 

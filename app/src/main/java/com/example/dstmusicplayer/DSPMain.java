@@ -37,6 +37,8 @@ public class DSPMain extends AppCompatActivity {
     private DSPAdapter adapter;
     private List<Song> songList;
     private ArrayList<String> DSPList;
+    private utf8 utf8;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +101,25 @@ public class DSPMain extends AppCompatActivity {
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+
+        ImageView img_more = findViewById(R.id.img_properties);
+        img_more.setOnClickListener(view -> {
+            ArrayList<String> listGiaiMa = new ArrayList<>();
+
+            for (String item : DSPList) {
+                String giaima = utf8.decodeString(item);
+                listGiaiMa.add(giaima);
+            }
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putStringArrayListExtra("songList", listGiaiMa);
+            startActivity(intent);
+
+        });
         ImageView img_back = findViewById(R.id.img_back);
         img_back.setOnClickListener(view -> finish());
         ImageView img_shuffle = findViewById(R.id.img_shuffle);
         img_shuffle.setOnClickListener(view -> {
+
             DSPList = MainActivity.shuffle(DSPList);
 
             MainActivity.setDSPList(DSPList);
@@ -140,6 +157,8 @@ public class DSPMain extends AppCompatActivity {
                     songList.addAll(songs);
                 }
             }
+        }else {
+            Toast.makeText(this, "DSPList Null", Toast.LENGTH_SHORT).show();
         }
         return songList;
     }

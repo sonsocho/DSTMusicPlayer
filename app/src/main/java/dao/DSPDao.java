@@ -24,4 +24,8 @@ public interface DSPDao {
 
    @Query("DELETE FROM DanhSachPhat")
     void deleteDSP();
+
+   @Query("UPDATE DanhSachPhat SET phatNhac = 1 WHERE id_BaiHat = :idBaiHat")
+    void updatePhatNhac(String idBaiHat);
+
 }
