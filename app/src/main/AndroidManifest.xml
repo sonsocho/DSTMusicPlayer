@@ -19,6 +19,7 @@
         <activity android:name=".selectSong" android:screenOrientation="portrait"/>
         <activity android:name=".DSPMain" android:screenOrientation="portrait"/>
         <activity android:name=".PhatNhacActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".SearchActivity" android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"

@@ -33,5 +33,8 @@ public interface SongDao {
     @Query("UPDATE BaiHat SET soLanNghe = soLanNghe + 1 WHERE id_BaiHat = :id")
     void incrementSoLanNghe(String id);
 
+    @Query("SELECT * FROM BaiHat WHERE tenBaiHat LIKE :query OR tenNgheSi LIKE :query OR album LIKE :query")
+    List<Song> searchSongs(String query);
+
 
 }

@@ -112,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, MusicService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        miniPlayerFragment = new MiniPlayerFragment();
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.miniPlayerContainer, miniPlayerFragment)
-                    .commit();
-        }
+//        Intent intent = new Intent(this, MusicService.class);
+//        startService(intent);
+//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        miniPlayerFragment = new MiniPlayerFragment();
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+//                    .commit();
+//        }
 
 
         //check permission
@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 List<String> idBaiHat = db.dspdao().getAllId();
                 DSPList = new ArrayList<>(idBaiHat);
-
 
             }catch (Exception e) {
                 Log.d("azcv", "lỗi Mainactivity");
@@ -247,13 +246,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        Intent intent = new Intent(this, MusicService.class);
-//        startService(intent);
-//        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-//        miniPlayerFragment = new MiniPlayerFragment();
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.miniPlayerContainer, miniPlayerFragment)
-//                .commit();
+        Intent intent = new Intent(this, MusicService.class);
+        startService(intent);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        miniPlayerFragment = new MiniPlayerFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.miniPlayerContainer, miniPlayerFragment)
+                .commit();
         if (DSPList != null) {
             for (String idBaiHat : DSPList) {
                 Log.d("aqer", idBaiHat);
