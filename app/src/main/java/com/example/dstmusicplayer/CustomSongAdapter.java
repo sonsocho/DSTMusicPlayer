@@ -38,6 +38,7 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
     private utf8 utf8;
     private ImageView albumArtImageView, properties;
     private TextView titleTextView, artistTextView;
+    private bottomDialog dialog = new bottomDialog();
 
 
     public interface OnItemClickListener {
@@ -102,6 +103,8 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                     sendID.putExtra("fileNhac",songPath2);
                     getContext().startActivity(sendID);
                 }
+                clearDSP(songPath2);
+
             });
 
             Bitmap currentAlbumArt;
@@ -119,17 +122,9 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
 
             properties.setOnClickListener(view -> {
-                if (songPath2 != null) {
-                    ArrayList<String> a = MainActivity.getDSPList();
-                    if (a == null) {
-                        a = new ArrayList<>();
-                    }
-                    Toast.makeText(context, songPath2, Toast.LENGTH_SHORT).show();
-                    a.add(songPath2);
-                    MainActivity.setDSPList(a);
-                } else {
-                    Toast.makeText(context, "Song path is null!", Toast.LENGTH_SHORT).show();
-                }
+
+                dialog.setSongPath(songPath2);
+                dialog.showBottomDialog(getContext());
             });
 
 
@@ -144,4 +139,9 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         return listDSP;
     }
 
+    private void clearDSP(String songPath) {
+        ArrayList<String> arrEmpty = new ArrayList<>();
+        arrEmpty.add(songPath);
+        MainActivity.setDSPList(arrEmpty);
+    }
 }

@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -118,6 +119,7 @@ public class PhatNhacActivity extends AppCompatActivity {
             unbindService(serviceConnection);
             isServiceBound = false;
         }
+        MainActivity.setIdPhatNhac(currentSongId);
     }
 
     @Override
@@ -176,9 +178,10 @@ public class PhatNhacActivity extends AppCompatActivity {
             });
 
             btnPlayList.setOnClickListener(v ->{
+                MainActivity.setIdPhatNhac(currentSongId);
                 Intent intent = new Intent(this, DSPMain.class);
-                intent.putExtra("idBaiHatDangPhat", currentSongId);
                 startActivity(intent);
+
             });
 
             AsyncTask.execute(() -> {

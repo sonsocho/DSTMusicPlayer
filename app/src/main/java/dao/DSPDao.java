@@ -24,5 +24,4 @@ public interface DSPDao {
 
    @Query("DELETE FROM DanhSachPhat")
     void deleteDSP();
-
 }
