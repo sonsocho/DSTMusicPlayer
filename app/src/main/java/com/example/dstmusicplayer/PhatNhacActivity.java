@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -19,11 +20,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import connectDB.SongData;
+import dao.SongDao;
 import dao.YeuThichDao;
 import entity.YeuThich;
 
@@ -39,18 +42,13 @@ public class PhatNhacActivity extends AppCompatActivity {
     private boolean isServiceBound = false;
     private int currentPosition;
     private boolean isUpdatingSeekBar = false;
-    private String currentSongId;
+    private String currentSongId, thoiGianNghe;
     private YeuThichDao yeuThichDao;
+    private SongDao songDao;
     private boolean isFavorite;
     private Runnable timerRunnable;
     private Handler timerHandler = new Handler();
     private utf8 utf8;
-    private int currentSongIndex;
-
-
-    private ArrayList<String> songIdList;
-
-
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -58,6 +56,12 @@ public class PhatNhacActivity extends AppCompatActivity {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicService = binder.getService();
             isServiceBound = true;
+            musicService.setOnSongChangeListener(new MusicService.OnSongChangeListener() {
+                @Override
+                public void onSongChanged(String newFilePath) {
+                    setupUI(); // Cập nhật UI với bài hát mới
+                }
+            });
             handler.postDelayed(() -> {
                 if (musicService != null) {
                     int totalTime = musicService.getDuration();
@@ -65,12 +69,7 @@ public class PhatNhacActivity extends AppCompatActivity {
                     tvTotalTime.setText(formatTime(totalTime));
                     updateSeekBarMusic();
                 }
-            }, 500);
-
-            musicService.setPlaylist(songIdList, currentSongIndex);
-            String fileGoc = musicService.getCurrentSongFilePath();
-            currentSongId = utf8.encodeString(fileGoc);
-            checkFavoriteStatus();
+            }, 1000);
             setupUI();
         }
         @Override
@@ -104,81 +103,18 @@ public class PhatNhacActivity extends AppCompatActivity {
         btnLove = findViewById(R.id.btnLove);
         btnNextSong = findViewById(R.id.btnNext);
         btnPreviousSong = findViewById(R.id.btnPrevious);
-
-
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("songList")) {
-            songIdList = intent.getStringArrayListExtra("songList");  // Vị trí bài hát hiện tại
-        }
-
-        btnNextSong.setOnClickListener(v -> {
-            if (musicService != null) {
-                musicService.playNext();
-                setupUI();
-            }
-        });
-
-        btnPreviousSong.setOnClickListener(v -> {
-            if (musicService != null) {
-                musicService.playPrevious();
-                setupUI();
-            }
-        });
-
-        btnPlayList = findViewById(R.id.btnPlaylist);
-        btnPlayList.setOnClickListener(v ->{
-            Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
-        });
-
-
         btnRepeat = findViewById(R.id.btnRepeat);
-        btnRepeat.setOnClickListener(v -> {
-            if (musicService != null) {
-                musicService.toggleLooping();
-                if (musicService.isLooping()) {
-                    Toast.makeText(PhatNhacActivity.this, "Lặp lại bài hát hiện tại: BẬT", Toast.LENGTH_SHORT).show();
-                    btnRepeat.setImageResource(R.drawable.repeat_1);
-                } else {
-                    Toast.makeText(PhatNhacActivity.this, "Lặp lại bài hát hiện tại: TẮT", Toast.LENGTH_SHORT).show();
-                    btnRepeat.setImageResource(R.drawable.repeat);
-                }
-            }
-        });
-
+        btnPlayList = findViewById(R.id.btnPlaylist);
 
         Intent serviceIntent = new Intent(this, MusicService.class);
         startService(serviceIntent);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+        songDao = SongData.getInstance(this).songDao();
         yeuThichDao = SongData.getInstance(this).yeuThichDao();
 
-        //Volume
-        btnVolume.setOnClickListener(v -> {
-            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            if (currentVolume > 0) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-                seekBarVolume.setProgress(0);
-            } else {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0);
-                seekBarVolume.setProgress(10);
-            }
-            updateVolumeIcon(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-        });
-        btnBack.setOnClickListener(v -> {
-            finish();
-        });
-        setupVolumeControl();
-
-
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Intent intent = new Intent(this, MusicService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
 
     @Override
     protected void onStop() {
@@ -206,7 +142,11 @@ public class PhatNhacActivity extends AppCompatActivity {
             tenNgheSi.setSelected(true);
             tenBaiHat.setText(musicService.getCurrentSongTitle());
             tenNgheSi.setText(musicService.getCurrentSongArtist());
-            imageVinyl.setImageBitmap(musicService.getCurrentAlbumArt());
+            if(musicService.getCurrentAlbumArt() != null){
+                imageVinyl.setImageBitmap(musicService.getCurrentAlbumArt());
+            }else{
+                imageVinyl.setImageResource(R.drawable.default_item);
+            }
             currentPosition = musicService.getCurrentPosition();
             seekBarMusic.setProgress(currentPosition);
             tvCurrentTime.setText(formatTime(currentPosition));
@@ -214,15 +154,8 @@ public class PhatNhacActivity extends AppCompatActivity {
             int totalTime = musicService.getDuration();
             tvTotalTime.setText(formatTime(totalTime));
             seekBarMusic.setMax(totalTime);
-
-            btnLove.setOnClickListener(view -> {
-                if (isFavorite) {
-                    removeFavorite(currentSongId);
-                } else {
-                    addFavorite(currentSongId);
-                }
-            });
-
+            currentSongId = utf8.encodeString(musicService.getCurrentSongFilePath());
+            checkFavoriteStatus(currentSongId);
             if(!musicService.isPlaying()){
                 musicService.resumeMusic();
                 btnPlayPause.setImageResource(R.drawable.pause);
@@ -230,6 +163,7 @@ public class PhatNhacActivity extends AppCompatActivity {
             }else {
                 btnPlayPause.setImageResource(R.drawable.pause);
             }
+
             btnPlayPause.setOnClickListener(v -> {
                 if (musicService != null) {
                     if (!musicService.isPlaying()) {
@@ -244,6 +178,85 @@ public class PhatNhacActivity extends AppCompatActivity {
                 }
             });
 
+            btnPlayList.setOnClickListener(v ->{
+                // Toast.makeText(PhatNhacActivity.this, currentSongId, Toast.LENGTH_SHORT).show();
+            });
+
+            AsyncTask.execute(() -> {
+                thoiGianNghe = GetCurrentTime.getCurrentTime();
+                songDao.updateThoiGianNghe(currentSongId, thoiGianNghe);
+
+            });
+            new Thread(() -> {
+                songDao.incrementSoLanNghe(currentSongId);
+            }).start();
+            btnNextSong.setOnClickListener(v -> {
+                if (musicService != null) {
+                    if (musicService.getRepeatMode() == MusicService.REPEAT_ONE) {
+                        musicService.setRepeatMode(MusicService.NO_REPEAT);
+                        Toast.makeText(PhatNhacActivity.this, "Tắt lặp lại bài hát hiện tại", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat); // Cập nhật UI
+                    }
+                    musicService.playNext(true);
+                    setupUI();
+                }
+            });
+
+            btnPreviousSong.setOnClickListener(v -> {
+                if (musicService != null) {
+                    if (musicService.getRepeatMode() == MusicService.REPEAT_ONE) {
+                        musicService.setRepeatMode(MusicService.NO_REPEAT);
+                        Toast.makeText(PhatNhacActivity.this, "Tắt lặp lại bài hát hiện tại", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat); // Cập nhật UI
+                    }
+                    musicService.playPrevious();
+                    setupUI();
+                }
+            });
+
+            btnRepeat.setOnClickListener(v -> {
+                if (musicService != null) {
+                    int currentMode = musicService.getRepeatMode();
+                    if (currentMode == MusicService.NO_REPEAT) {
+                        musicService.setRepeatMode(MusicService.REPEAT_ONE);
+                        Toast.makeText(PhatNhacActivity.this, "Lặp lại bài hát hiện tại: BẬT", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat_1);
+                    } else if (currentMode == MusicService.REPEAT_ONE) {
+                        musicService.setRepeatMode(MusicService.REPEAT_ALL);
+                        Toast.makeText(PhatNhacActivity.this, "Lặp lại toàn bộ Playlist: BẬT", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat_playlist);
+                    } else {
+                        musicService.setRepeatMode(MusicService.NO_REPEAT);
+                        Toast.makeText(PhatNhacActivity.this, "Lặp lại: TẮT", Toast.LENGTH_SHORT).show();
+                        btnRepeat.setImageResource(R.drawable.repeat);
+                    }
+                }
+            });
+            //Volume
+            btnVolume.setOnClickListener(v -> {
+                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                if (currentVolume > 0) {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+                    seekBarVolume.setProgress(0);
+                } else {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0);
+                    seekBarVolume.setProgress(10);
+                }
+                updateVolumeIcon(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            });
+            btnBack.setOnClickListener(v -> {
+                finish();
+            });
+            setupVolumeControl();
+            btnLove.setOnClickListener(view -> {
+                if (isFavorite) {
+                    removeFavorite(currentSongId);
+                } else {
+                    addFavorite(currentSongId);
+                }
+                checkFavoriteStatus(currentSongId); // Kiểm tra lại trạng thái yêu thích
+            });
             seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -260,15 +273,11 @@ public class PhatNhacActivity extends AppCompatActivity {
             });
         }
     }
-    private void playSong(String song) {
-        // Mã để phát bài hát
-        musicService.startMusic(utf8.decodeString(song));
-    }
 
 
-    private void checkFavoriteStatus() {
+    private void checkFavoriteStatus(String checkIDlove) {
         AsyncTask.execute(() -> {
-            isFavorite = yeuThichDao.isFavorite(currentSongId) > 0;
+            isFavorite = yeuThichDao.isFavorite(checkIDlove) > 0;
             runOnUiThread(() -> {
                 if (isFavorite) {
                     btnLove.setImageResource(R.drawable.loved);

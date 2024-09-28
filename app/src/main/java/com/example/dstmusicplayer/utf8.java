@@ -2,7 +2,6 @@ package com.example.dstmusicplayer;
 
 import android.util.Base64;
 
-
 public class utf8 {
 
     public static String encodeString(String songPath) {
@@ -18,9 +17,9 @@ public class utf8 {
     // Hàm xóa dấu cách
     public static String removeSpaces(String input) {
         if (input == null) {
-            return null; // Trả về null nếu đầu vào là null
+            return null;
         }
-        return input.replaceAll("\\s+", ""); // Xóa tất cả các dấu cách
+        return input.replaceAll("\\s+", "");
     }
 }
 

@@ -71,21 +71,25 @@ public class playlistFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
-        String id1  = "L21udC9zaGFyZWQvUGljdHVyZXMvQ8O0IMSQxqFuIGdp4buvYSBjdeG7mWMgdMOsbmggdjIgLSBU SC5tcDM= ";
-        String id2 = "L21udC9zaGFyZWQvUGljdHVyZXMvTuG6v3UgLSBUaMOhaSBIb8OgbmcubXAz ";
-        String id3 = "L21udC9zaGFyZWQvUGljdHVyZXMvSOG6oW5oIFBow7pjIMSQw7MgRW0gS2jDtG5nIEPDsyAoVmVy c2lvbiAyKSAtIFRow6FpIEhvw6BuZyBSZW1peC5tcDM= ";
-        songIdList = new ArrayList<>();
-//        songIdList.add(id1);
-//        songIdList.add(id2);
-//        songIdList.add(id3);
-        songIdList.add(utf8.decodeString(id1));
-        songIdList.add(utf8.decodeString(id2));
-        songIdList.add(utf8.decodeString(id3));
+//        String id1 = "L21udC9zaGFyZWQvUGljdHVyZXMvQ8O0IMSQxqFuIGdp4buvYSBjdeG7mWMgdMOsbmggdjIgLSBU SC5tcDM= ";
+//        String id2 = "L21udC9zaGFyZWQvUGljdHVyZXMvTuG6v3UgLSBUaMOhaSBIb8OgbmcubXAz ";
+//        String id3 = "L21udC9zaGFyZWQvUGljdHVyZXMvSOG6oW5oIFBow7pjIMSQw7MgRW0gS2jDtG5nIEPDsyAoVmVyc2lvbiAyKSAtIFRow6FpIEhvw6BuZyBSZW1peC5tcDM= ";
+//
+//        songIdList = new ArrayList<>();
+//        songIdList.add(utf8.decodeString(id1));
+//        songIdList.add(utf8.decodeString(id2));
+//        songIdList.add(utf8.decodeString(id3));
+//
+//        btnDSPNhac = view.findViewById(R.id.btnDSPNhac);
+//        btnDSPNhac.setOnClickListener(v ->{
+//            Intent intent = new Intent(getContext(), MainActivity.class);
+//            intent.putStringArrayListExtra("songList", songIdList);
+//            getContext().startActivity(intent);
+//        });
 
         btnDSPNhac = view.findViewById(R.id.btnDSPNhac);
         btnDSPNhac.setOnClickListener(v ->{
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            intent.putStringArrayListExtra("songList", songIdList);
+            Intent intent = new Intent(getContext(), SearchActivity.class);
             getContext().startActivity(intent);
         });
 
