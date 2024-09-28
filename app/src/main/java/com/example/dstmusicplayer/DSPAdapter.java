@@ -2,7 +2,9 @@ package com.example.dstmusicplayer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +24,7 @@ import entity.Song;
 public class DSPAdapter extends RecyclerView.Adapter<DSPAdapter.SongViewHolder> {
     private final Context context;
     private final List<Song> songs;
-
+    private ImageView albumArtImageView;
     public DSPAdapter(Context context, List<Song> songs) {
         this.context = context;
         this.songs = songs;
@@ -59,18 +61,22 @@ public class DSPAdapter extends RecyclerView.Adapter<DSPAdapter.SongViewHolder> 
         });
 
         String songPath = song.getId_BaiHat();
-        Bitmap img = null;
-        try {
-            img = SongImage.getImg(songPath); // Lấy hình ảnh bài hát
-        } catch (IOException e) {
-            e.printStackTrace();
+        albumArtImageView = holder.itemView.findViewById(R.id.song_image);
+
+        Bitmap currentAlbumArt;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(utf8.decodeString(songPath));
+        byte[] art = retriever.getEmbeddedPicture();
+        if (art != null) {
+            currentAlbumArt = BitmapFactory.decodeByteArray(art, 0, art.length);
+            albumArtImageView.setImageBitmap(currentAlbumArt);
+        } else {
+            currentAlbumArt = null;
+            albumArtImageView.setImageResource(R.drawable.default_item);
         }
 
-        if (img != null) {
-            holder.imageView.setImageBitmap(img);
-        } else {
-            holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.logo)); // Hình ảnh mặc định nếu không tìm thấy
-        }
+
+
     }
 
     @Override
@@ -80,13 +86,11 @@ public class DSPAdapter extends RecyclerView.Adapter<DSPAdapter.SongViewHolder> 
 
     static class SongViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, artistTextView;
-        ImageView imageView;
 
         SongViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.song_name);
             artistTextView = itemView.findViewById(R.id.song_artist);
-            imageView = itemView.findViewById(R.id.song_image);
         }
     }
 }

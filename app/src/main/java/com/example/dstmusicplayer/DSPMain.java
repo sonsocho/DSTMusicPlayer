@@ -137,6 +137,8 @@ public class DSPMain extends AppCompatActivity {
                     songList.addAll(songs);
                 }
             }
+        }else {
+            Toast.makeText(this, "DSPList Null", Toast.LENGTH_SHORT).show();
         }
         return songList;
     }

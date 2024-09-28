@@ -28,12 +28,8 @@ import entity.Song;
 public class ThuvienFragment extends Fragment {
     private SongData db;
     private ListView songListView;
-    private RecyclerView recyclerView;
-    private MediaPlayer mediaPlayer;
     private addSong permissionManager;
-    private boolean select;
     private CustomSongAdapter adapter;
-    private ListView listView;
 
     @Nullable
     @Override
@@ -91,9 +87,7 @@ public class ThuvienFragment extends Fragment {
 
     private void displaySongs() {
         List<Song> songs = db.songDao().getAllSongs();
-        adapter = new CustomSongAdapter(requireContext(), songs, song -> {
-
-        });
+        adapter = new CustomSongAdapter(requireContext(), songs, song -> {});
         songListView.setAdapter(adapter);
     }
 

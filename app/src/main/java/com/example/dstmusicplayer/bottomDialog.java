@@ -12,9 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.example.dstmusicplayer.R;
 
 public class bottomDialog {
     public void showBottomDialog(Context context) {

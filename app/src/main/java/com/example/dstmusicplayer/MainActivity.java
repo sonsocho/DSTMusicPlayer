@@ -58,9 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isServiceBound = false;
     private MusicService musicService;
     private MiniPlayerFragment miniPlayerFragment;
-    private utf8 utf8;
     private SongData db;
-    public static ArrayList<String> DSPList;
+    public static ArrayList<String> DSPList= new ArrayList<>();;
 
 
     @Override
@@ -159,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
-        createDSPList();
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -168,19 +167,31 @@ public class MainActivity extends AppCompatActivity {
                 permissionManager.requestPermission();
             }
         });
+        createDSPList();
     }
 
 
     private void createDSPList() {
+        Log.d("qeraa", "createDSPList");
+
         new Thread(() -> {
             try {
-                List<String> idBaiHat = db.dspdao().getAllId();
-                DSPList = new ArrayList<>(idBaiHat);
+                List<String> idBaiHats = db.dspdao().getAllId();
+                if (idBaiHats != null && !idBaiHats.isEmpty()) {
+                    for(String songID : idBaiHats) {
+                       DSPList.add(songID);
+                       Log.d("qeraa", songID);
+                    }
 
-            }catch (Exception e) {
-                Log.d("azcv", "lỗi Mainactivity");
+                } else {
+                    Log.d("qeraa", "Không có ID nào được trả về từ cơ sở dữ liệu.");
+                }
+            } catch (Exception e) {
+                Log.d("azcv", "lỗi Mainactivity: " + e.getMessage());
             }
         }).start();
+
+
     }
 
     @Override
@@ -194,13 +205,7 @@ public class MainActivity extends AppCompatActivity {
             bottomNavigationView.setSelectedItemId(R.id.library);
             Toast.makeText(this, "RESULT_ADD", Toast.LENGTH_SHORT).show();
 
-        }else if (resultCode == RESULT_LIST) {
-            Intent intent = getIntent();
-            ArrayList<String> DSPList = intent.getStringArrayListExtra("DSPList");
-            for(String a : DSPList){
-                Log.d("azcvmain", a);
-            }
-            Toast.makeText(this, "RESULT_LIST", Toast.LENGTH_SHORT).show();
+
         }else {
             Log.e("MusicFragment", "Request code or result code not matched");
             Toast.makeText(this, "else", Toast.LENGTH_SHORT).show();
@@ -246,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("aqeraa", "start");
         Intent intent = new Intent(this, MusicService.class);
         startService(intent);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -276,12 +282,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        new Thread(() -> {
-            db.dspdao().deleteDSP();
-            for (String idBaiHat : DSPList) {
-                db.dspdao().insertDSP(idBaiHat);
-            }
-        }).start();
+        Log.d("aqeraa", "stop");
+        if(DSPList != null) {
+            new Thread(() -> {
+                db.dspdao().deleteDSP();
+                for (String idBaiHat : DSPList) {
+                    db.dspdao().insertDSP(idBaiHat);
+                }
+            }).start();
+        }
 
     }
 
