@@ -48,16 +48,19 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
 
 
     private void fetchIdBaiHat() {
-        new Thread(() -> {
-            List<String> idBaiHat = SongData.getInstance(getContext()).dspdao().getAllId();
-            idBaiHatList.addAll(idBaiHat);
+            new Thread(() -> {
+                List<String> idBaiHat = SongData.getInstance(getContext()).dspdao().getAllId();
+               if(idBaiHat != null) {
+                   idBaiHatList.addAll(idBaiHat);
 
-            ((Activity) context).runOnUiThread(() -> {
-                for (String id : idBaiHatList) {
-                    listDSP.add(id);
-                }
-            });
-        }).start();
+                   ((Activity) context).runOnUiThread(() -> {
+                       for (String id : idBaiHatList) {
+                           listDSP.add(id);
+                       }
+                   });
+               }
+            }).start();
+
     }
 
     @NonNull
@@ -78,16 +81,11 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             artistTextView.setText(song.getTenNgheSi());
             String songPath2 = song.getId_BaiHat();
 
-//            convertView.setOnClickListener(v->{
-//                Intent sendID = new Intent(getContext(), MainActivity.class);
-//                sendID.putExtra("fileNhac", songPath2);
-//                getContext().startActivity(sendID);
-//            });
             convertView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onItemClick(song);
                     Intent sendID = new Intent(getContext(), MainActivity.class);
-                    sendID.putExtra("fileNhac", songPath2);
+                    sendID.putExtra("fileNhac", utf8.decodeString(songPath2));
                     getContext().startActivity(sendID);
                 }
             });
@@ -101,31 +99,24 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
-                albumArtImageView.setImageResource(R.drawable.default_image);
+                albumArtImageView.setImageResource(R.drawable.mainlogo);
             }
 
 
             properties.setOnClickListener(view -> {
-//                dialog.showBottomDialog(getContext());
-
                 if (songPath2 != null) {
-//                    new Thread(() -> {
-//                        try {
-//                            dspData.dspdao().insertDSP(songPath2);
-//                            Log.d("InsertDSP", songPath2);
-//                        } catch (Exception e) {
-//                            Log.e("InsertDSP", "Error inserting DSP: ", e);
-//                        }
-//                    }).start();
-                   ArrayList<String> a = MainActivity.getDSPList();
-                   a.add(songPath2);
+                    ArrayList<String> a = MainActivity.getDSPList();
+                    if (a == null) {
+                        a = new ArrayList<>();
+                    }
+                    Toast.makeText(context, songPath2, Toast.LENGTH_SHORT).show();
+                    a.add(songPath2);
                     MainActivity.setDSPList(a);
-
                 } else {
                     Toast.makeText(context, "Song path is null!", Toast.LENGTH_SHORT).show();
                 }
-
             });
+
 
         }
 
@@ -136,11 +127,6 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         });
 
 
-        //propertis click
-        ImageView img_properties = convertView.findViewById(R.id.img_properties);
-        img_properties.setOnClickListener(view -> {
-            
-        });
         return convertView;
     }
 
@@ -148,7 +134,5 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         Toast.makeText(getContext(), "Oke la", Toast.LENGTH_SHORT ).show();
         return listDSP;
     }
-
-
 
 }

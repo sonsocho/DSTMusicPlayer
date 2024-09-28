@@ -11,7 +11,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="53dp"
-        android:background="@color/purple_200"
+        android:background="@color/music"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,6 +24,8 @@
             android:layout_gravity="center"
             android:padding="8dp"
             android:src="@drawable/arrow_back" />
+
+
 
     </LinearLayout>
 

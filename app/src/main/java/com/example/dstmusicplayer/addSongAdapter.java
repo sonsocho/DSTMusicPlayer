@@ -6,26 +6,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import entity.Song;
 
 public class addSongAdapter extends ArrayAdapter<Song> {
     private final ArrayList<Song> songList;
     private final ArrayList<Song> selectedSongs = new ArrayList<>();
-    private ImageView imgIcon;
+    private final boolean[] checkBoxState;
 
     public addSongAdapter(@NonNull Context context, @NonNull ArrayList<Song> objects) {
         super(context, 0, objects);
-        songList = objects;
+        this.songList = objects;
+        this.checkBoxState = new boolean[songList.size()];
     }
 
     @Override
@@ -43,20 +43,27 @@ public class addSongAdapter extends ArrayAdapter<Song> {
 
             titleTextView.setText(song.getTenBaiHat());
             artistTextView.setText(song.getTenNgheSi());
-            String songPath =  song.getId_BaiHat();
+
+            String songPath = song.getId_BaiHat();
             Bitmap img = null;
             try {
                 img = SongImage.getImg(songPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
             if (img != null) {
                 albumArtImageView.setImageBitmap(img);
             } else {
-                albumArtImageView.setImageResource(R.drawable.default_image);
+                albumArtImageView.setImageResource(R.drawable.mainlogo);
             }
 
+            selectCheckBox.setOnCheckedChangeListener(null);
+
+            selectCheckBox.setChecked(checkBoxState[position]);
+
             selectCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                checkBoxState[position] = isChecked;
                 if (isChecked) {
                     selectedSongs.add(song);
                 } else {
