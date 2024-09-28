@@ -101,7 +101,6 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                 }
             });
 
-
             Bitmap currentAlbumArt;
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             retriever.setDataSource(utf8.decodeString(songPath2));
