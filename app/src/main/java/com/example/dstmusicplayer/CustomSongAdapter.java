@@ -99,7 +99,7 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
                 if (listener != null) {
                     listener.onItemClick(song);
                     Intent sendID = new Intent(getContext(), MainActivity.class);
-                    sendID.putExtra("fileNhac", utf8.decodeString(songPath2));
+                    sendID.putExtra("fileNhac",songPath2);
                     getContext().startActivity(sendID);
                 }
             });
